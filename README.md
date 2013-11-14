@@ -1,9 +1,10 @@
 Sudoku Solver
 =============
 
-Il y a 3 programmes différents :
+Il y a 3 programmes diffï¿½rents :
 Main2 est la version 2.0 du Sudoku Solver
-Mainn et Grille sont une voie d'améliorer la propreté du code de Main2.
+Mainn et Grille sont une voie d'amï¿½liorer la propretï¿½ du code de Main2.
 Main3 est la version 2.2 du Sudoku Solver, non mis au propore.
+MainUser est un mainqui permet de rentrer manuellement les valeur dans la grille de deux maniÃ¨res diffÃ©rentes
 
-Pour utiliser un des programmes, lire les commentaires dans la méthode main correspondante.
+Pour utiliser un des programmes, lire les commentaires dans la mï¿½thode main correspondante.
