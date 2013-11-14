@@ -1,4 +1,3 @@
-
 public class Mainn {
 
 	/**
@@ -7,9 +6,10 @@ public class Mainn {
 	public static void main(String[] args) {
 
 		Grille sudoku = new Grille();
-		sudoku.InitialisationGrille(); // On met 0 dans toutes les cases de la grille
+		//sudoku.initialisationGrille(); // On met 0 dans toutes les cases de la grille
+		//0 mis pendant la creation de la grille
 
-		// Déclarer ici les valeurs initiales sous la forme EntrerValeur(ligne, colonne, valeur)
+		// Dï¿½clarer ici les valeurs initiales sous la forme EntrerValeur(ligne, colonne, valeur)
 
 		/**
 		 * essaye de lancer la section de code jusqu a ce qu une exception survienne 
@@ -53,15 +53,15 @@ public class Mainn {
 			sudoku.entrerValeur(9,8,9);
 			sudoku.entrerValeur(9,9,8);
 
-			sudoku.testLigneEntree(); // On vérifie qu'une valeur en entrée ne se trouve pas 2 fois
-			// sur la même ligne
+			sudoku.testLigneEntree(); // On vï¿½rifie qu'une valeur en entrï¿½e ne se trouve pas 2 fois
+			// sur la mï¿½me ligne
 
-			// Cette prochaine boucle for contient toute la partie calcul pour résoudre le sudoku, 
-			// elle est composée de beaucoup de lignes de code !
+			// Cette prochaine boucle for contient toute la partie calcul pour rï¿½soudre le sudoku, 
+			// elle est composï¿½e de beaucoup de lignes de code !
 
-			sudoku.resolutionSudoku(); // Cette méthode contient tous les calculs pour résoudre le sudoku 
+			sudoku.resolutionSudoku(); // Cette mï¿½thode contient tous les calculs pour rï¿½soudre le sudoku 
 
-			sudoku.afficheResolu(); // Une fois les calculs faits, on affiche le résultat
+			sudoku.afficheResolu(); // Une fois les calculs faits, on affiche le rï¿½sultat
 
 		/**
 		 * code traite uniquement si une Exception est interceptee pendant le try du code
