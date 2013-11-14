@@ -28,7 +28,7 @@ public class MainUser {
     int l =-1, c =-1, val = -1; //valeur abberrantes pour commencer la boucle
     while ((val != 0) && (l != 0)  && (c !=0)) 
     {
-      int l =0, c =0, val = 0; // valeurs par defaut en cas de probleme
+      l =0, c =0, val = 0; // valeurs par defaut en cas de probleme
       
       try
       {
