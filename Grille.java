@@ -1,13 +1,13 @@
-
 public class Grille {
 
 	private int [][] tab;
 
 	/**
-	 * constructeur par défaut
+	 * constructeur par dï¿½faut
 	 */
 	public Grille(){
 		tab = new int[9][9];
+		initialisationGrille();
 	}
 
 
@@ -30,7 +30,7 @@ public class Grille {
 
 
 
-	public void InitialisationGrille ()	{
+	public void initialisationGrille ()	{
 		for (int i=0; i<9; i++) 
 		{
 			for (int j=0; j<9; j++)
@@ -44,13 +44,13 @@ public class Grille {
 	{
 		if (0<i && i<10 && 0<j && j<10 && 0<valeur && valeur<10)
 		{
-			tab[i-1][j-1]=valeur+10; // Le +10 est pour différencier les valeurs fixes
+			tab[i-1][j-1]=valeur+10; // Le +10 est pour diffï¿½rencier les valeurs fixes
 		}							 // des valeurs que l'on va tester
 		else
 		{
 			afficheImpossible();
 			/**
-			 * pense à System.err.print quand tu veux vraiment imprimer en console d erreur
+			 * pense ï¿½ System.err.print quand tu veux vraiment imprimer en console d erreur
 			 * 
 			 * mais de toute facon c est pas trop java de faire un message puis un exit... 
 			 * si tu veux faire plus propre il faut soulever une exception 
@@ -62,9 +62,9 @@ public class Grille {
 			 */
 
 			System.err.print("Erreur : Il y a une valeur non comprise entre 1 et 9 ou ");
-			System.err.println("non située dans la grille 9x9.");
-			System.err.print("Elle a été entrée après les valeurs renseignées ");
-			System.err.println("dans la grille précédente.");
+			System.err.println("non situï¿½e dans la grille 9x9.");
+			System.err.print("Elle a ï¿½tï¿½ entrï¿½e aprï¿½s les valeurs renseignï¿½es ");
+			System.err.println("dans la grille prï¿½cï¿½dente.");
 			System.exit(0);
 
 		}
@@ -73,7 +73,7 @@ public class Grille {
 
 	public  void testLigneEntree () 
 	{
-		// On vérifie qu'il n'y a pas deux fois une valeur entrée sur une même ligne,
+		// On vï¿½rifie qu'il n'y a pas deux fois une valeur entrï¿½e sur une mï¿½me ligne,
 		// la partie calcul du code pouvant traiter tous les autres cas
 
 		for (int i=0; i<9; i++) 
@@ -89,7 +89,7 @@ public class Grille {
 						 */
 						afficheImpossible();
 						System.err.print("Sudoku impossible, une valeur au moins est deux ");
-						System.err.println("fois sur une même ligne !");
+						System.err.println("fois sur une mï¿½me ligne !");
 						System.exit(0);
 					}
 				}
@@ -104,12 +104,12 @@ public class Grille {
 
 		for (int i=0; i<9; i++) 
 		{
-			for (int j=0; j<9; j++) // Double boucle pour repérer la case dans le tableau
+			for (int j=0; j<9; j++) // Double boucle pour repï¿½rer la case dans le tableau
 			{
-				if (impossible==false) 	   // Si la valeur de la case précédente était possible
+				if (impossible==false) 	   // Si la valeur de la case prï¿½cï¿½dente ï¿½tait possible
 				{				       
 					while (tab[i][j] > 10 && i*j!=64) // Tant que la case actuelle est fixe,
-						// on passe à la case suivante
+						// on passe ï¿½ la case suivante
 					{					
 						if (j==8)
 						{
@@ -128,14 +128,14 @@ public class Grille {
 					}
 				}
 
-				else // Si la valeur de la case précédente ne convient pas
+				else // Si la valeur de la case prï¿½cï¿½dente ne convient pas
 				{
 					while (tab[i][j] > 8 && i+j!=0) // Si aucune valeur ne convient ou si elle 
-						// est fixe, on va changer la case précédente à celle-ci
+						// est fixe, on va changer la case prï¿½cï¿½dente ï¿½ celle-ci
 					{
 						if (tab[i][j]==9)
 						{
-							tab[i][j]=0; // tout en réinitialisant la valeur si non fixe
+							tab[i][j]=0; // tout en rï¿½initialisant la valeur si non fixe
 						}
 
 						if (j==0)
@@ -151,7 +151,7 @@ public class Grille {
 
 					if (tab[i][j] < 9)
 					{
-						tab[i][j]++; // Si la valeur ne convenant pas de la case testée se trouve 
+						tab[i][j]++; // Si la valeur ne convenant pas de la case testï¿½e se trouve 
 					}			 	 // entre 1 et 8, on teste avec la valeur suivante 
 
 					if (tab[i][j] > 8 && i==0 && j==0)
@@ -160,8 +160,8 @@ public class Grille {
 						 * penser aux exceptions ici au lieu de message puis exit
 						 */
 						afficheImpossible();
-						System.err.print("Sudoku impossible : valeurs entrées fausses ");
-						System.err.println("ou pas de combinaison réalisable.");
+						System.err.print("Sudoku impossible : valeurs entrï¿½es fausses ");
+						System.err.println("ou pas de combinaison rï¿½alisable.");
 						System.exit(0);
 					}
 				}
@@ -170,22 +170,22 @@ public class Grille {
 				valeurAvantTests = 0;
 
 				while (valeurAvantTests!=tab[i][j]) 
-					// Si la valeur a changé après un des tests, il faut tous les refaire
+					// Si la valeur a changï¿½ aprï¿½s un des tests, il faut tous les refaire
 				{
 					valeurAvantTests=tab[i][j];
 
 					for (int k=8; k>=0; k--) 
 					{
 						if (tab[i][j]==tab[i][k]%10 && k!=j) 
-							// On vérifie que la valeur n'est pas dans la ligne
+							// On vï¿½rifie que la valeur n'est pas dans la ligne
 						{
-							if (tab[i][j]<9) // On évite d'inscrire 10 dans une case
+							if (tab[i][j]<9) // On ï¿½vite d'inscrire 10 dans une case
 							{
 								tab[i][j]++;
 								k=j;
 							}
 							else if (j==0) // Pour ce faire, on essaie de changer la valeur de
-								// la case précédente
+								// la case prï¿½cï¿½dente
 							{
 								tab[i][j]=0;
 								j=7;
@@ -216,7 +216,7 @@ public class Grille {
 						for (int k=8; k>=0; k--) 
 						{
 							if (tab[i][j]==tab[k][j]%10 && k!=i) 
-								// Si la valeur n'est pas dans la ligne, on vérifie ensuite 
+								// Si la valeur n'est pas dans la ligne, on vï¿½rifie ensuite 
 								// qu'elle n'est pas non plus dans la colonne
 							{
 								if (tab[i][j]<9)
@@ -252,12 +252,12 @@ public class Grille {
 					}
 
 					if (impossible == false) 
-						// Si la valeur n'est ni dans la ligne ni dans la colonne, on vérifie 
-						// qu'elle n'est pas non plus dans la région	 						   
+						// Si la valeur n'est ni dans la ligne ni dans la colonne, on vï¿½rifie 
+						// qu'elle n'est pas non plus dans la rï¿½gion	 						   
 					{
-						if (i%3==0 && impossible==false) // Si on est dans la 1e ligne de la région
+						if (i%3==0 && impossible==false) // Si on est dans la 1e ligne de la rï¿½gion
 						{
-							if (j%3==0) // Si on est dans la 1e colonne de la région
+							if (j%3==0) // Si on est dans la 1e colonne de la rï¿½gion
 								if (tab[i][j]==tab[i+1][j+1]%10 || tab[i][j]==tab[i+1][j+2]%10
 										|| tab[i][j]==tab[i+2][j+1]%10 || tab[i][j]==tab[i+2][j+2]%10)
 								{
@@ -349,7 +349,7 @@ public class Grille {
 							}
 						}
 
-						if (i%3==1) // Si on est dans la 2e ligne de la région
+						if (i%3==1) // Si on est dans la 2e ligne de la rï¿½gion
 						{
 							if (j%3==0)
 							{
@@ -445,7 +445,7 @@ public class Grille {
 							}							
 						}			
 
-						if (i%3==2 && impossible==false) // Si on est dans la 3e ligne de la région
+						if (i%3==2 && impossible==false) // Si on est dans la 3e ligne de la rï¿½gion
 						{
 							if (j%3==0)
 								if (tab[i][j]==tab[i-2][j+1]%10 || tab[i][j]==tab[i-2][j+2]%10
@@ -538,10 +538,10 @@ public class Grille {
 								}
 							}							
 						}
-					} // Fin de les tests sur la région
+					} // Fin de les tests sur la rï¿½gion
 				}					
 			}			
-		} // On referme la double boucle sur la grille, le soduku est ici résolu
+		} // On referme la double boucle sur la grille, le soduku est ici rï¿½solu
 	} // Fin du coeur du programme
 
 	public  void afficheImpossible()
@@ -573,7 +573,7 @@ public class Grille {
 
 	public void afficheResolu()
 	{
-		System.out.println("Grille originale :              Grille résolue :");
+		System.out.println("Grille originale :              Grille rï¿½solue :");
 		for (int i=0; i<9; i++)
 		{
 			for (int j=0; j<9; j++)
