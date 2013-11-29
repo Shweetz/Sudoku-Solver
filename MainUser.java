@@ -40,7 +40,8 @@ public class MainUser {
         val = sc.nextInt();
       }catch(Exception e) {}
       
-       if ((val != 0) && (l != 0) && (c !=0)) sudoku.entrerValeur(l,c,val);
+       if ((val > 0) && (val  < 10) && (l < 10) && (l > 0) && (c < 10) && (c > 0)) sudoku.entrerValeur(l,c,val);
+       else if ((val  < 10) && (l < 10) && (c < 10)) System.err.println("une des valeurs incorrecte (doit être entre 1 et 9) : l ="+l+" c=" +c+" val="+val );
     }//demande a l utilisateur de rentrer ligne colonne et valeur jusqu a ce qu il y  ait une erreur ou que l utitilsateur tape 0
     
     */
