@@ -1,12 +1,11 @@
 Sudoku Solver
 =============
 
-Il y a 3 programmes différents :
+Pour tester le programme, lire les commentaires du main correspondant.
 
-Main2 est le Sudoku Solver v1 (actuellement v1.1).
+Main3 est le Sudoku Solver dans sa version actelle (v2.2).
 
-Mainn et Grille sont un début d'amélioration de la propreté du code de Main2.
+Main2 est le Sudoku Solver brute force (v1).
 
-Main3 est le Sudoku Solver v2 (actuellement v2.2).
+Mainn et Grille sont des projets abandonnés.
 
-Pour utiliser un des programmes, lire les commentaires dans la méthode main correspondante.
