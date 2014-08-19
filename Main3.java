@@ -1,135 +1,63 @@
+ï»¿
+import java.io.*;
 
 public class Main3
 {
-
-	static int[][] tab = new int[81][11];
-	static int[] nbOccurences = new int[10];
-	static boolean initialisationTerminee = false;
-	static int nombreChiffresRemplis = 0;
+	int[] nbOccurences = new int[10];
+	boolean initialisationTerminee = false;
+	int nombreChiffresRemplis = 0;
 	
-	public static void main(String[] args) 
-	{
-		String str_out;
-		int nombre = 0;
-		int difficulté = 1;
-		int nombreChiffresATrouver = 81; // Ecrire le nombre de chiffres suivants à trouver 
-										 // (écrire au moins 81 pour finir le sudoku)
-		
-		InitialisationGrille(tab);
-		
-		// Ecrire ici les valeurs de départ sous la forme : EntrerValeur(ligne, colonne, valeur);
-		EntrerValeur(1,3,8);
-		EntrerValeur(1,7,5);
-		EntrerValeur(2,2,7);
-		EntrerValeur(2,4,4);
-		EntrerValeur(2,6,6);
-		EntrerValeur(2,8,8);
-		EntrerValeur(3,1,3);
-		EntrerValeur(3,9,6);
-		EntrerValeur(4,3,4);
-		EntrerValeur(4,4,8);
-		EntrerValeur(4,6,2);
-		EntrerValeur(4,7,7);
-		EntrerValeur(5,1,5);
-		EntrerValeur(5,9,3);
-		EntrerValeur(6,3,1);
-		EntrerValeur(6,4,5);
-		EntrerValeur(6,6,4);
-		EntrerValeur(6,7,2);
-		EntrerValeur(7,1,1);
-		EntrerValeur(7,9,5);
-		EntrerValeur(8,2,5);
-		EntrerValeur(8,4,3);
-		EntrerValeur(8,6,9);
-		EntrerValeur(8,8,2);
-		EntrerValeur(9,3,6);
-		EntrerValeur(9,7,9);
-		
-		initialisationTerminee = true;
-		
-		System.out.println("Grille originale : ");
-		
-		Afficher(tab);
-		
-		while (nombre < nombreChiffresATrouver) 
-		{
-			if (TrouverChiffreSuivant()==false)
-			{
-				if (difficulté==1)
-					difficulté=2;
-				
-				if (Algo2()==false)
-				{
-					if (difficulté==2)
-						difficulté=3;
-					
-					if (GroupesIsolesMelanges()==false)
-					{
-						difficulté=4;
-						
-						if (RegleExclusion()==false)
-						{
-							
-							str_out = "Chiffre suivant non trouvé : ";
-							if (nombreChiffresRemplis < 70)
-								System.out.println(str_out + "Sudoku trop difficile pour ce programme (pour l'instant) !");
-							else
-								System.out.println(str_out + "Sudoku non résolvable, vérifier les chiffres entrés !");
-							nombre = nombreChiffresATrouver;
-						
-						}
-					}
-				}
-				
-				if (TrouverChiffreSuivant()==true)
-				{
-					Afficher(tab);
-					nombre++;
-				}
-			}
-			else
-			{
-				Afficher(tab);
-				nombre++;
-			}
-			
-			if (nombreChiffresRemplis==81)
-			{
-				nombre = nombreChiffresATrouver;
-				str_out = "Sudoku résolu ! Difficulté : " + difficulté + "/4 ";
-				if (difficulté==1)
-					System.out.println(str_out + "(facile).");
-				if (difficulté==2)
-					System.out.println(str_out + "(moyen).");
-				if (difficulté==3)
-					System.out.println(str_out + "(assez difficile).");
-				if (difficulté==4)
-					System.out.println(str_out + "(difficile).");
-			}
-		}
-	}
+	int[][] tab = new int[81][11];
 	
-	public static void InitialisationGrille(int[][] tab)
+	/* 	How to understand tab :
+	 *  The row of tab is [(row of sudoku*9) + column of sudoku] like this :
+	 *  
+	 * 	0  1  2 | 3  4  5 | 6  7  8
+		9  .  . | .  .  . | .  .  .
+		18 .  . | .  .  . | .  .  .
+		-  -  - + -  -  - + -  -  -
+		27 .  . | .  .  . | .  .  .
+		36 .  . | .  .  . | .  .  .
+		45 .  . | .  .  50| .  .  .
+		-  -  - + -  -  - + -  -  -
+		54 .  . | .  .  . | .  .  .
+		63 .  . | .  .  . | .  .  .
+		72 .  . | .  .  . | .  .  80
+		
+		For each row, you have 11 columns. Each row is a spot in the sudoku, so each spot has 11 columns
+		
+		Column 0: Value 0: Don't know what is the value in this spot.
+				  Value	1: Value in this spot known (not at the initialization)
+				  Value 2: Value in this spot given at the initialization
+				  Value 3: Last value found in the sudoku (not at the initialization)
+				  
+		Column 1 to 9: Value 0: The value [1 to 9] is not possible in this spot
+					   Value 1: The value [1 to 9] is a possibility in this spot
+					   
+		Column 10: Value 0: The value in this spot in not known yet
+				   Value 1 to 9: The value in this spot is known, this column holds the final value
+	 */
+	
+	void InitialisationGrille(int[][] tab)
 	{
 		for (int i=0; i<81; i++) 
 		{
-			tab[i][0]=0;
-			tab[i][10]=0;
+			tab[i][0]=0; // 0 means don't know the value at this spot
+			tab[i][10]=0; // same
 			
 			for (int j=1; j<10; j++)
 			{
-				tab[i][j]=1;
+				tab[i][j]=1; // 1 means at the spot i [0 to 80], the j [1 to 9] value is possible
 			}
 		}
 		
 		for (int i=0; i<10; i++) 
 		{
-			nbOccurences[i]=0;
-		}
-		
+			nbOccurences[i]=0; // At the start, there are no '1', no '2'... in the sudoku
+		}		
 	}
 	
-	public static void EntrerValeur(int i, int j, int valeur)
+	void EntrerValeur(int i, int j, int valeur)
 	{		
 		int l = 0;
 		
@@ -139,23 +67,23 @@ public class Main3
 			nombreChiffresRemplis++;
 		}
 		else
-			System.out.println("!!! Vous avez rentré au moins 2 fois une valeur dans la même case !!!");
+			System.out.println("!!! Vous avez rentrÃ© au moins 2 fois une valeur dans la mÃªme case !!!");
 		
-		while (tab[l][0]!=3 && l < 80) // On cherche la valeur du tableau possédant 3 dans la 1e case du tableau
+		while (tab[l][0]!=3 && l < 80) // On cherche la ligne du tableau possÃ©dant '3' dans la 1e colonne du tableau
 		{
 			l++;
 		}
-		if (tab[l][0]==3) // Et on la repasse à 1 (3 est le signe que c'est le dernière valeur trouvée)
+		if (tab[l][0]==3) // Et on la repasse Ã  1 (3 est le signe que c'est le derniÃ¨re valeur trouvÃ©e)
 			tab[l][0]=1;
 		
 		if (initialisationTerminee == false)
 			tab[(i-1)*9 + j-1][0]=2;
 		else
-			tab[(i-1)*9 + j-1][0]=3; // On différencie la dernière valeur trouvée
+			tab[(i-1)*9 + j-1][0]=3; // On diffÃ©rencie la derniÃ¨re valeur trouvÃ©e
 			
 		tab[(i-1)*9 + j-1][10]=valeur;
 		
-		// On va maintenant déduire des informations de cette nouvelle valeur
+		// On va maintenant dÃ©duire des informations de cette nouvelle valeur
 		
 		for (int k=1; k<10; k++) // Une case est remplie par une unique valeur
 		{
@@ -165,7 +93,7 @@ public class Main3
 			}
 		}
 		 
-		for (int ligne=0; ligne<9; ligne++) // Une valeur apparaît une fois par ligne, on supprime les autres possibilités
+		for (int ligne=0; ligne<9; ligne++) // Une valeur apparaÃ®t une fois par ligne, on supprime les autres possibilitÃ©s
 		{
 			if (ligne!=i-1)
 			{
@@ -173,7 +101,7 @@ public class Main3
 			}
 		}
 		
-		for (int colonne=0; colonne<9; colonne++) // Une valeur apparaît une fois par colonne
+		for (int colonne=0; colonne<9; colonne++) // Une valeur apparaÃ®t une fois par colonne
 		{
 			if (colonne!=j-1)
 			{
@@ -181,12 +109,12 @@ public class Main3
 			}
 		}
 		
-		while (i%3 != 1) // On cherche la 1e case de la région où on se trouve 
+		while (i%3 != 1) // On cherche la 1e case de la rÃ©gion oÃ¹ on se trouve 
 			i--;
 		while (j%3 != 1)
 			j--;
 		
-		for (int h = (i-1)*9 + j-1; h < (i-1)*9 + j+20; h++) // Une fois par région
+		for (int h = (i-1)*9 + j-1; h < (i-1)*9 + j+20; h++) // Une fois par rÃ©gion
 		{
 			if (tab[h][10]!=valeur)
 				tab[h][valeur]=0;
@@ -196,7 +124,7 @@ public class Main3
 		
 	}
 	
-	public static void Afficher(int[][] tab)
+	void Afficher(int[][] tab)
 	{
 		String str_out = "";
 		for (int i=0; i<81; i++)
@@ -265,14 +193,14 @@ public class Main3
 		System.out.print(str_out); 
 	}
 	
-	public static boolean TrouverChiffreSuivant()
+	boolean TrouverChiffreSuivant()
 	{
 		int compteur;
 		String str_out;
 		
 		for (int valeur=1; valeur<10; valeur++) // On va faire tous les tests valeur par valeur
 		{
-			for (int ligne=0; ligne<9; ligne+=3) // On complète une région si possible
+			for (int ligne=0; ligne<9; ligne+=3) // On complÃ¨te une rÃ©gion si possible
 			{
 				for (int colonne=0; colonne<9; colonne+=3)
 				{
@@ -284,13 +212,13 @@ public class Main3
 							if (tab[(ligne+ligneRegion)*9 + (colonne+colonneRegion)][valeur]==1)
 								compteur++;
 							
-							if (tab[(ligne+ligneRegion)*9 + (colonne+colonneRegion)][10]==valeur) // condition éliminatoire
+							if (tab[(ligne+ligneRegion)*9 + (colonne+colonneRegion)][10]==valeur) // condition Ã©liminatoire
 							{
 								colonneRegion=3;
 								ligneRegion=3;
 							}
 						
-							if (compteur==1 && ligneRegion==2 && colonneRegion==2) // 1 possibilité dans la région
+							if (compteur==1 && ligneRegion==2 && colonneRegion==2) // 1 possibilitÃ© dans la rÃ©gion
 							{
 								CompleterRegion(ligne*9 + colonne, valeur);
 								return true;
@@ -300,7 +228,7 @@ public class Main3
 				}
 			}
 			
-			for (int ligne=0; ligne<9; ligne++) // Sinon on complète une ligne si possible
+			for (int ligne=0; ligne<9; ligne++) // Sinon on complÃ¨te une ligne si possible
 			{
 				compteur = 0;
 				for (int colonne=0; colonne<9; colonne++)
@@ -319,7 +247,7 @@ public class Main3
 				}
 			}
 			
-			for (int colonne=0; colonne<9; colonne++) // Si aucun des 2, on complète une colonne si possible
+			for (int colonne=0; colonne<9; colonne++) // Si aucun des 2, on complÃ¨te une colonne si possible
 			{
 				compteur = 0;
 				for (int ligne=0; ligne<9; ligne++)
@@ -374,20 +302,20 @@ public class Main3
 		return false;		
 	}
 	
-	public static void CompleterRegion(int i, int valeur)
+	void CompleterRegion(int i, int valeur)
 	{
 		String str_out;
-		int j = i; // i est la position de la valeur en haut à gauche dans la région à remplir
+		int j = i; // i est la position de la valeur en haut Ã  gauche dans la rÃ©gion Ã  remplir
 			// donc i est divisible par 3 et ne se trouve qu'entre 0 et 9, 27 et 36, 54 et 63.
 		
-		while (tab[j][valeur]==0) // On trouve la position de la valeur à remplir 
+		while (tab[j][valeur]==0) // On trouve la position de la valeur Ã  remplir 
 		{
 			if (j%3==2)
 				j+=6;
 			j++;
 		}
 
-		str_out = "\nLe chiffre " + valeur + " de la région ";
+		str_out = "\nLe chiffre " + valeur + " de la rÃ©gion ";
 		if (i/9 < 3)
 			str_out += "en haut ";
 		if (i/9 > 2 && i/9 < 6 && (i%9 < 3 || i%9 > 5))
@@ -395,19 +323,19 @@ public class Main3
 		if (i/9 > 5)
 			str_out += "en bas ";
 		if (i%9 < 3)
-			str_out += "à gauche ";
+			str_out += "Ã  gauche ";
 		if (i%9 > 2 && i%9 < 6)
 			str_out += "au milieu ";
 		if (i%9 > 5)
-			str_out += "à droite ";
+			str_out += "Ã  droite ";
 		System.out.println(str_out + "est seulement possible ici :");
 		EntrerValeur(j/9 + 1, j%9 + 1, valeur);
 	}
 	
-	public static void CompleterLigne(int i, int valeur) 
+	void CompleterLigne(int i, int valeur) 
 	{
 		String str_out;
-		int j = i; // i est le numéro de la ligne à compléter
+		int j = i; // i est le numÃ©ro de la ligne Ã  complÃ©ter
 		
 		while (tab[j][valeur]==0) // On trouve la position (ligne, colonne) de la valeur
 			j++;
@@ -417,10 +345,10 @@ public class Main3
 		EntrerValeur(i/9 + 1, j%9 + 1, valeur);
 	}
 
-	public static void CompleterColonne(int i, int valeur)
+	void CompleterColonne(int i, int valeur)
 	{
 		String str_out;
-		int j = i; // i est le numéro de la colonne à compléter
+		int j = i; // i est le numÃ©ro de la colonne Ã  complÃ©ter
 		
 		while (tab[j][valeur]==0) // On trouve la position (ligne, colonne) de la valeur
 			j+=9;
@@ -430,7 +358,7 @@ public class Main3
 		EntrerValeur(j/9 + 1, i + 1, valeur);
 	}
 
-	public static boolean Algo2()
+	boolean Algo2()
 	{		
 		String str_out;
 		int compteur;
@@ -444,7 +372,7 @@ public class Main3
 				compteur=0;
 				i=ligne;
 				
-				for (int colonne=0; colonne<9; colonne+=3) // Horizontal sur la région à partir de la ligne
+				for (int colonne=0; colonne<9; colonne+=3) // Horizontal sur la rÃ©gion Ã  partir de la ligne
 				{
 					if (tab[ligne*9 + colonne][valeur]==0 && tab[ligne*9 + colonne+1][valeur]==0 
 														  && tab[ligne*9 + colonne+2][valeur]==0)
@@ -479,7 +407,7 @@ public class Main3
 							str_out = "Algorithme de niveau 2 :";
 							str_out += " le chiffre " + valeur;
 							str_out += " de la ligne " + (ligne+1);
-							str_out += " est dans la région ";
+							str_out += " est dans la rÃ©gion ";
 							if (i==0)
 								str_out += "en haut ";
 							if (i==3 && compteur!=8)
@@ -487,13 +415,13 @@ public class Main3
 							if (i==6)
 								str_out += "en bas ";
 							if (compteur==11)
-								str_out += "à gauche, ";
+								str_out += "Ã  gauche, ";
 							if (compteur==8)
 								str_out += "au milieu, ";
 							if (compteur==5)
-								str_out += "à droite, ";
+								str_out += "Ã  droite, ";
 							str_out += "donc pas de " + valeur;
-							System.out.println(str_out + " dans le reste de la région.");
+							System.out.println(str_out + " dans le reste de la rÃ©gion.");
 							return RechercheFructueuse;
 						}
 					}
@@ -502,7 +430,7 @@ public class Main3
 			
 			for (int ligne=0; ligne<9; ligne+=3) // Algorithme de niveau 2 horizontal
 			{				
-				for (int colonne=0; colonne<9; colonne+=3)  // Horizontal sur la ligne à partir de la région
+				for (int colonne=0; colonne<9; colonne+=3)  // Horizontal sur la ligne Ã  partir de la rÃ©gion
 				{
 					compteur=0;
 					for (int ligneRegion=0; ligneRegion<3; ligneRegion++)
@@ -539,7 +467,7 @@ public class Main3
 							{	
 								str_out = "Algorithme de niveau 2 :";
 								str_out += " le chiffre " + valeur;
-								str_out += " de la région ";
+								str_out += " de la rÃ©gion ";
 								if (ligne==0)
 									str_out += "en haut ";
 								if (ligne==3 && colonne!=3)
@@ -547,11 +475,11 @@ public class Main3
 								if (ligne==6)
 									str_out += "en bas ";
 								if (colonne==0)
-									str_out += "à gauche ";
+									str_out += "Ã  gauche ";
 								if (colonne==3)
 									str_out += "au milieu ";
 								if (colonne==6)
-									str_out += "à droite ";
+									str_out += "Ã  droite ";
 								str_out += "est dans la ligne " + (ligne + 14 - compteur);
 								str_out += " donc pas de " + valeur;
 								System.out.println(str_out + " dans le reste de la ligne.");
@@ -567,7 +495,7 @@ public class Main3
 				compteur=0;
 				i=colonne;
 				
-				for (int ligne=0; ligne<9; ligne+=3) // Vertical sur la région à partir de la colonne
+				for (int ligne=0; ligne<9; ligne+=3) // Vertical sur la rÃ©gion Ã  partir de la colonne
 				{
 					//compteurAffichage=0;
 					
@@ -604,7 +532,7 @@ public class Main3
 							str_out = "Algorithme de niveau 2 :";
 							str_out += " le chiffre " + valeur;
 							str_out += " de la colonne " + (colonne+1);
-							str_out += " est dans la région ";
+							str_out += " est dans la rÃ©gion ";
 							if (compteur==11)
 								str_out += "en haut ";
 							if (compteur==8 && i!=3)
@@ -612,13 +540,13 @@ public class Main3
 							if (compteur==5)
 								str_out += "en bas ";
 							if (i==0)
-								str_out += "à gauche, ";
+								str_out += "Ã  gauche, ";
 							if (i==3)
 								str_out += "au milieu, ";
 							if (i==6)
-								str_out += "à droite, ";
+								str_out += "Ã  droite, ";
 							str_out += "donc pas de " + valeur;
-							System.out.println(str_out + " dans le reste de la région.");
+							System.out.println(str_out + " dans le reste de la rÃ©gion.");
 							return RechercheFructueuse;
 						}
 					}
@@ -627,7 +555,7 @@ public class Main3
 			
 			for (int ligne=0; ligne<9; ligne+=3) // Algorithme de niveau 2 vertical
 			{				
-				for (int colonne=0; colonne<9; colonne+=3)  // Vertical sur la colonne à partir de la région
+				for (int colonne=0; colonne<9; colonne+=3)  // Vertical sur la colonne Ã  partir de la rÃ©gion
 				{
 					compteur=0;
 					for (int colonneRegion=0; colonneRegion<3; colonneRegion++)
@@ -664,7 +592,7 @@ public class Main3
 							{	
 								str_out = "Algorithme de niveau 2 :";
 								str_out += " le chiffre " + valeur;
-								str_out += " de la région ";
+								str_out += " de la rÃ©gion ";
 								if (ligne==0)
 									str_out += "en haut ";
 								if (ligne==3 && colonne!=3)
@@ -672,11 +600,11 @@ public class Main3
 								if (ligne==6)
 									str_out += "en bas ";
 								if (colonne==0)
-									str_out += "à gauche ";
+									str_out += "Ã  gauche ";
 								if (colonne==3)
 									str_out += "au milieu ";
 								if (colonne==6)
-									str_out += "à droite ";
+									str_out += "Ã  droite ";
 								str_out += "est dans la colonne " + (colonne + 14 - compteur);
 								str_out += " donc pas de " + valeur;
 								System.out.println(str_out + " dans le reste de la colonne.");
@@ -690,7 +618,7 @@ public class Main3
 		return RechercheFructueuse;
 	}
 	
-	public static boolean GroupesIsolesMelanges()
+	boolean GroupesIsolesMelanges()
 	{		
 		String str_out;
 		boolean RechercheFructueuse = false;
@@ -699,7 +627,7 @@ public class Main3
 		int n;
 		int d;
 		int temp[] = new int[10];
-		int compteurColonnesAffichees = 0; // On peut initialiser ici car on return dès qu'on l'utilise
+		int compteurColonnesAffichees = 0; // On peut initialiser ici car on return dÃ¨s qu'on l'utilise
 		int nombreCasesATester;
 		int casesPossibles;
 		
@@ -718,23 +646,23 @@ public class Main3
 							compteur++; // Compte le nombre de chiffres impossibles par case
 					}
 					
-					if (compteur > 1 && compteur < 8)  // Test si la case a entre 2 et 7 impossibilités
+					if (compteur > 1 && compteur < 8)  // Test si la case a entre 2 et 7 impossibilitÃ©s
 						temp[colonne] = 9-compteur; // temp stocke le nombre de valeurs possibles
-													// et donc le nombre de cases à tester
+													// et donc le nombre de cases Ã  tester
 				}
 			}
 			
-			for (int colonne=0; colonne<9; colonne++) // On regarde si les mêmes n valeurs impossibles 
+			for (int colonne=0; colonne<9; colonne++) // On regarde si les mÃªmes n valeurs impossibles 
 													  // sont dans 9-n cases
 			{
 				i=ligne*9 + colonne;
 				nombreCasesATester = temp[colonne]; // Nombre de valeurs possibles
 				casesPossibles = 1;
 				
-				if (nombreCasesATester > 1 && nombreCasesATester < 8) // Si la case est sujette à tests
+				if (nombreCasesATester > 1 && nombreCasesATester < 8) // Si la case est sujette Ã  tests
 				{
 					n=1;
-					for (int v=1; v<10; v++) // On écrit dans temp[colonne] les valeurs impossibles
+					for (int v=1; v<10; v++) // On Ã©crit dans temp[colonne] les valeurs impossibles
 					{
 						if  (tab[i][v] == 0)
 						{
@@ -754,17 +682,17 @@ public class Main3
 						if (j!=colonne && tab[i][0]==0) // On teste case par case les non remplies
 						{
 							for (int m=0; m < 9-nombreCasesATester; m++) 
-								// m sélectionne le chiffre de temp[colonne]
+								// m sÃ©lectionne le chiffre de temp[colonne]
 							{
 								if (tab[i][(temp[colonne]/((int)Math.pow(10,m))) % 10] != 0)
 									m=10; // Si une valeur impossible d'une case est possible dans l'autre
 								if (m==8-nombreCasesATester)
 								{
 									casesPossibles++;
-									temp[j]=colonne+10; // On retient les cases vérifiant l'algorithme
-										// +10 différencie les temp[j] vérifiant l'algorithme
+									temp[j]=colonne+10; // On retient les cases vÃ©rifiant l'algorithme
+										// +10 diffÃ©rencie les temp[j] vÃ©rifiant l'algorithme
 										// des temp[j] stockant le nombre de valeurs possibles.
-										// C'est 2 tableaux en 1, moins de place mémoire
+										// C'est 2 tableaux en 1, moins de place mÃ©moire
 										// mais beaucoup plus de bordel !															
 								}
 							}
@@ -772,11 +700,11 @@ public class Main3
 					}
 					
 					if (casesPossibles > nombreCasesATester)
-						System.out.println("Sudoku impossible, n valeurs doivent être dans n-1 cases !");
+						System.out.println("Sudoku impossible, n valeurs doivent Ãªtre dans n-1 cases !");
 					
 					else if (casesPossibles == nombreCasesATester)
 					{
-						for (int j=0; j < 9; j++) // On enlève les possibilités
+						for (int j=0; j < 9; j++) // On enlÃ¨ve les possibilitÃ©s
 						{
 							i = ligne*9 + j;
 							
@@ -784,7 +712,7 @@ public class Main3
 							{
 								d=1;
 								
-								for (int m=1; m < 10; m++) // On enlève les possibilités case par case
+								for (int m=1; m < 10; m++) // On enlÃ¨ve les possibilitÃ©s case par case
 								{
 									if ((temp[colonne]/((int)Math.pow(10,m-d))) % 10!=m)
 									{
@@ -859,23 +787,23 @@ public class Main3
 							compteur++; // Compte le nombre de chiffres impossibles par case
 					}
 					
-					if (compteur > 1 && compteur < 8)  // Test si la case a entre 2 et 7 impossibilités
+					if (compteur > 1 && compteur < 8)  // Test si la case a entre 2 et 7 impossibilitÃ©s
 						temp[ligne] = 9-compteur; // temp stocke le nombre de valeurs possibles
-													// et donc le nombre de cases à tester
+													// et donc le nombre de cases Ã  tester
 				}
 			}
 			
-			for (int ligne=0; ligne<9; ligne++) // On regarde si les mêmes n valeurs impossibles 
+			for (int ligne=0; ligne<9; ligne++) // On regarde si les mÃªmes n valeurs impossibles 
 													  // sont dans 9-n cases
 			{
 				i=ligne*9 + colonne;
 				nombreCasesATester = temp[ligne]; // Nombre de valeurs possibles
 				casesPossibles = 1;
 				
-				if (nombreCasesATester > 1 && nombreCasesATester < 8) // Si la case est sujette à tests
+				if (nombreCasesATester > 1 && nombreCasesATester < 8) // Si la case est sujette Ã  tests
 				{
 					n=1;
-					for (int v=1; v<10; v++) // On écrit dans temp[colonne] les valeurs impossibles
+					for (int v=1; v<10; v++) // On Ã©crit dans temp[colonne] les valeurs impossibles
 					{
 						if  (tab[i][v] == 0)
 						{
@@ -895,17 +823,17 @@ public class Main3
 						if (j!=ligne && tab[i][0]==0) // On teste case par case les non remplies
 						{
 							for (int m=0; m < 9-nombreCasesATester; m++) 
-								// m sélectionne le chiffre de temp[colonne]
+								// m sÃ©lectionne le chiffre de temp[colonne]
 							{
 								if (tab[i][(temp[ligne]/((int)Math.pow(10,m))) % 10] != 0)
 									m=10; // Si une valeur impossible d'une case est possible dans l'autre
 								if (m==8-nombreCasesATester)
 								{
 									casesPossibles++;
-									temp[j]=ligne+10; // On retient les cases vérifiant l'algorithme
-										// +10 différencie les temp[j] vérifiant l'algorithme
+									temp[j]=ligne+10; // On retient les cases vÃ©rifiant l'algorithme
+										// +10 diffÃ©rencie les temp[j] vÃ©rifiant l'algorithme
 										// des temp[j] stockant le nombre de valeurs possibles.
-										// C'est 2 tableaux en 1, moins de place mémoire
+										// C'est 2 tableaux en 1, moins de place mÃ©moire
 										// mais beaucoup plus de bordel !															
 								}
 							}
@@ -913,11 +841,11 @@ public class Main3
 					}
 					
 					if (casesPossibles > nombreCasesATester)
-						System.out.println("Sudoku impossible, n valeurs doivent être dans n-1 cases !");
+						System.out.println("Sudoku impossible, n valeurs doivent Ãªtre dans n-1 cases !");
 					
 					else if (casesPossibles == nombreCasesATester)
 					{
-						for (int j=0; j < 9; j++) // On enlève les possibilités
+						for (int j=0; j < 9; j++) // On enlÃ¨ve les possibilitÃ©s
 						{
 							i = j*9 + colonne;
 							
@@ -925,7 +853,7 @@ public class Main3
 							{
 								d=1;
 								
-								for (int m=1; m < 10; m++) // On enlève les possibilités case par case
+								for (int m=1; m < 10; m++) // On enlÃ¨ve les possibilitÃ©s case par case
 								{
 									if ((temp[ligne]/((int)Math.pow(10,m-d))) % 10!=m)
 									{
@@ -986,11 +914,11 @@ public class Main3
 		for (int j=0; j<10; j++)
 			temp[j]=0;
 		
-		for (int ligne=0; ligne<9; ligne+=3) // Algorithme sur les régions
+		for (int ligne=0; ligne<9; ligne+=3) // Algorithme sur les rÃ©gions
 		{
 			for (int colonne=0; colonne<9; colonne+=3) // Trouve le nombre de chiffres impossibles par case
 			{
-				for (int ligneRegion=0; ligneRegion<3; ligneRegion++) // Algorithme sur les régions
+				for (int ligneRegion=0; ligneRegion<3; ligneRegion++) // Algorithme sur les rÃ©gions
 				{
 					for (int colonneRegion=0; colonneRegion<3; colonneRegion++) // Trouve le nombre de chiffres impossibles par case
 					{
@@ -1005,23 +933,23 @@ public class Main3
 									compteur++; // Compte le nombre de chiffres impossibles par case
 							}
 							
-							if (compteur > 1 && compteur < 8)  // Test si la case a entre 2 et 7 impossibilités
+							if (compteur > 1 && compteur < 8)  // Test si la case a entre 2 et 7 impossibilitÃ©s
 								temp[ligneRegion*3 + colonneRegion] = 9-compteur; // temp stocke le nombre de valeurs possibles
-															// et donc le nombre de cases à tester
+															// et donc le nombre de cases Ã  tester
 						}
 					}
 					
-					for (int colonneRegion=0; colonneRegion<3; colonneRegion++) // On regarde si les mêmes n valeurs impossibles 
+					for (int colonneRegion=0; colonneRegion<3; colonneRegion++) // On regarde si les mÃªmes n valeurs impossibles 
 															  // sont dans 9-n cases
 					{
 						i=(ligne+ligneRegion)*9 + (colonne+colonneRegion);
 						nombreCasesATester = temp[ligneRegion*3 + colonneRegion]; // Nombre de valeurs possibles
 						casesPossibles = 1;
 						
-						if (nombreCasesATester > 1 && nombreCasesATester < 8) // Si la case est sujette à tests
+						if (nombreCasesATester > 1 && nombreCasesATester < 8) // Si la case est sujette Ã  tests
 						{
 							n=1;
-							for (int v=1; v<10; v++) // On écrit dans temp[colonne] les valeurs impossibles
+							for (int v=1; v<10; v++) // On Ã©crit dans temp[colonne] les valeurs impossibles
 							{
 								if  (tab[i][v] == 0)
 								{
@@ -1041,17 +969,17 @@ public class Main3
 								if (j!=ligneRegion*3 + colonneRegion && tab[i][0]==0) // On teste case par case les non remplies
 								{
 									for (int m=0; m < 9-nombreCasesATester; m++) 
-										// m sélectionne le chiffre de temp[colonne]
+										// m sÃ©lectionne le chiffre de temp[colonne]
 									{
 										if (tab[i][(temp[ligneRegion*3 + colonneRegion]/((int)Math.pow(10,m))) % 10] != 0)
 											m=10; // Si une valeur impossible d'une case est possible dans l'autre
 										if (m==8-nombreCasesATester)
 										{
 											casesPossibles++;
-											temp[j]=ligneRegion*3 + colonneRegion+10; // On retient les cases vérifiant l'algorithme
-												// +10 différencie les temp[j] vérifiant l'algorithme
+											temp[j]=ligneRegion*3 + colonneRegion+10; // On retient les cases vÃ©rifiant l'algorithme
+												// +10 diffÃ©rencie les temp[j] vÃ©rifiant l'algorithme
 												// des temp[j] stockant le nombre de valeurs possibles.
-												// C'est 2 tableaux en 1, moins de place mémoire
+												// C'est 2 tableaux en 1, moins de place mÃ©moire
 												// mais beaucoup plus de bordel !															
 										}
 									}
@@ -1059,11 +987,11 @@ public class Main3
 							}
 							
 							if (casesPossibles > nombreCasesATester)
-								System.out.println("Sudoku impossible, n valeurs doivent être dans n-1 cases !");
+								System.out.println("Sudoku impossible, n valeurs doivent Ãªtre dans n-1 cases !");
 							
 							else if (casesPossibles == nombreCasesATester)
 							{
-								for (int j=0; j < 9; j++) // On enlève les possibilités
+								for (int j=0; j < 9; j++) // On enlÃ¨ve les possibilitÃ©s
 								{
 									i = ligne*9 + colonne + (j/3)*9 + j%3;
 									
@@ -1090,7 +1018,7 @@ public class Main3
 								{
 									d=1;
 									str_out = "Algorithme de niveau 3 : ";
-									str_out += "dans la région ";
+									str_out += "dans la rÃ©gion ";
 									if (ligne==0)
 										str_out += "en haut ";
 									if (ligne==3 && colonne!=3)
@@ -1098,11 +1026,11 @@ public class Main3
 									if (ligne==6)
 										str_out += "en bas ";
 									if (colonne==0)
-										str_out += "à gauche, ";
+										str_out += "Ã  gauche, ";
 									if (colonne==3)
 										str_out += "au milieu, ";
 									if (colonne==6)
-										str_out += "à droite, ";
+										str_out += "Ã  droite, ";
 									str_out += "les seules valeurs possibles dans les cases ";
 									
 									for (int j=0; j < 9; j++)
@@ -1133,7 +1061,7 @@ public class Main3
 												str_out += m + ", ";
 										}
 									}
-									System.out.println(str_out + "donc ces valeurs ne sont pas dans le reste de la région.");
+									System.out.println(str_out + "donc ces valeurs ne sont pas dans le reste de la rÃ©gion.");
 									return RechercheFructueuse;
 								}
 							}
@@ -1146,7 +1074,7 @@ public class Main3
 
 	}
 	
-	public static boolean RegleExclusion()
+	boolean RegleExclusion()
 	{		
 		String str_out;
 		boolean RechercheFructueuse = false;
@@ -1228,7 +1156,7 @@ public class Main3
 												}
 											}
 											
-											for (int j=0; j<9; j++) // On enlève les possibilités
+											for (int j=0; j<9; j++) // On enlÃ¨ve les possibilitÃ©s
 											{
 												d=1;
 												ligneOkay = false;
@@ -1244,7 +1172,7 @@ public class Main3
 												if (!ligneOkay)
 												{
 													u=0;
-													while (u<9-nombreNecessaire) // On enlève les possibilités case par case
+													while (u<9-nombreNecessaire) // On enlÃ¨ve les possibilitÃ©s case par case
 													{
 														d++;
 														if (tab[j*9 + colonnesOkay[u]-1][valeur]!=0)
@@ -1339,7 +1267,7 @@ public class Main3
 											d=1;
 											
 											for (int m=1; m < 10; m++) // On teste si les lignes 
-											// impossibles de la colonne actuelle le sont aussi sur la colonne testée
+											// impossibles de la colonne actuelle le sont aussi sur la colonne testÃ©e
 											{
 												if ((colonnesImpossibles/((int)Math.pow(10,m-d))) % 10!=m)
 												{
@@ -1349,7 +1277,7 @@ public class Main3
 												}
 											}
 											
-											for (int j=0; j<9; j++) // On enlève les possibilités
+											for (int j=0; j<9; j++) // On enlÃ¨ve les possibilitÃ©s
 											{
 												d=1;
 												ligneOkay = false;
@@ -1365,7 +1293,7 @@ public class Main3
 												if (!ligneOkay)
 												{
 													u=0;
-													while (u<9-nombreNecessaire) // On enlève les possibilités case par case
+													while (u<9-nombreNecessaire) // On enlÃ¨ve les possibilitÃ©s case par case
 													{
 														d++;
 														if (tab[(colonnesOkay[u]-1)*9 + j][valeur]!=0)
@@ -1406,5 +1334,107 @@ public class Main3
 			}		
 		}
 		return RechercheFructueuse;
+	}
+		
+	void solve(String fileName) 
+	{
+		String str_out;
+		int nombre = 0;
+		int difficultÃ© = 1;
+		int nombreChiffresATrouver = 81; // Ecrire le nombre de chiffres suivants Ã  trouver 
+										 // (Ã©crire au moins 81 pour finir le sudoku)
+		
+		InitialisationGrille(tab);
+		
+		try {
+			RandomAccessFile raf = new RandomAccessFile(fileName, "r");
+			String ligne;
+			
+			// Fill game table
+			for (int i = 0; (ligne = raf.readLine()) != null; i++) {
+				for (int j = 0; j < ligne.length(); ++j)
+				{
+					char c = ligne.charAt(j);
+					if (c != '.')
+						EntrerValeur(i+1, j+1 , c - '0'); // c format char->int
+				}
+			}
+			raf.close();
+		}
+		catch (Exception e) {
+			System.out.println(fileName + " not found: " + e.toString());
+		}
+		
+		initialisationTerminee = true;
+		
+		System.out.println("Grille originale : ");
+		
+		Afficher(tab);
+		
+		while (nombre < nombreChiffresATrouver) 
+		{
+			if (TrouverChiffreSuivant()==false)
+			{
+				if (difficultÃ©==1)
+					difficultÃ©=2;
+				
+				if (Algo2()==false)
+				{
+					if (difficultÃ©==2)
+						difficultÃ©=3;
+					
+					if (GroupesIsolesMelanges()==false)
+					{
+						difficultÃ©=4;
+						
+						if (RegleExclusion()==false)
+						{
+							
+							str_out = "Chiffre suivant non trouvÃ© : ";
+							if (nombreChiffresRemplis < 70)
+								System.out.println(str_out + "Sudoku trop difficile pour ce programme (pour l'instant) !");
+							else
+								System.out.println(str_out + "Sudoku non rÃ©solvable, vÃ©rifier les chiffres entrÃ©s !");
+							nombre = nombreChiffresATrouver;
+						
+						}
+					}
+				}
+				
+				if (TrouverChiffreSuivant()==true)
+				{
+					Afficher(tab);
+					nombre++;
+				}
+			}
+			else
+			{
+				Afficher(tab);
+				nombre++;
+			}
+			
+			if (nombreChiffresRemplis==81)
+			{
+				nombre = nombreChiffresATrouver;
+				str_out = "Sudoku rÃ©solu ! DifficultÃ© : " + difficultÃ© + "/4 ";
+				if (difficultÃ©==1)
+					System.out.println(str_out + "(facile).");
+				if (difficultÃ©==2)
+					System.out.println(str_out + "(moyen).");
+				if (difficultÃ©==3)
+					System.out.println(str_out + "(assez difficile).");
+				if (difficultÃ©==4)
+					System.out.println(str_out + "(difficile).");
+			}
+		}
+	}
+	
+	public static void main(String[] args) 
+	{
+		String fichier = "game.txt";
+		
+		Main3 game = new Main3();
+		
+		game.solve(fichier);	
 	}
 }

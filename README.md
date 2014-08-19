@@ -1,11 +1,14 @@
 Sudoku Solver
 =============
 
-Pour tester le programme, lire les commentaires du main correspondant.
+Main program: 
+Main3.java and game.txt
 
-Main3 est le Sudoku Solver dans sa version actelle (v2.2).
+Use a java compiler for Main3.java while having game.txt in the same folder.
+You can change game.txt but you have to create a file with 9 lines, no space, and dots '.' where there are no numbers.
 
-Main2 est le Sudoku Solver brute force (v1).
+Other:
+Main2 is brute force Sudoku Solver.
 
-Mainn et Grille sont des projets abandonnés.
+Mainn and Grille are unfinished.
 
