@@ -1,4 +1,4 @@
-import java.awt.*;
+ï»¿import java.awt.*;
 
 import javax.swing.*;
 
@@ -52,7 +52,7 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 		panel2.add(panel3);
 		panel2.add(panel4);
 		
-		// On crée les régions
+		// On crÃ©e les rÃ©gions
 		for(int i=0;i<3;i++)
 		{
 			for(int j=0;j<3;j++)
@@ -63,7 +63,7 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 			}
 		}	
 		
-		// On crée les cases
+		// On crÃ©e les cases
 		for(int i=0;i<9;i++)
 		{
 			for(int j=0;j<9;j++)
@@ -81,7 +81,7 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 			}
 		}
 
-		// On crée la zone de texte
+		// On crÃ©e la zone de texte
 		jp2[0][0] = new JPanel();
 		jp2[0][0].setBorder(BorderFactory.createEtchedBorder());
 		
@@ -89,9 +89,9 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 		text = new JTextArea("Appuyer sur R pour reset la grille ou cliquer "
 				+ "sur une case puis T pour reset la case");
 		text.setFont(new java.awt.Font("Helvetica", java.awt.Font.PLAIN, 20));
-		/** On souhaite un retour à ligne automatique : */
+		/** On souhaite un retour Ã  ligne automatique : */
 		text.setLineWrap(true);		 
-		/** On souhaite que les mots ne soient pas coupés : */
+		/** On souhaite que les mots ne soient pas coupÃ©s : */
 		text.setWrapStyleWord(true);
 		text.setSize(500, 800);
 
@@ -101,7 +101,7 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 		
 		text.addKeyListener(this);
 
-		// On crée les zones en-dessous du texte
+		// On crÃ©e les zones en-dessous du texte
 		jp3[0][0] = new JPanel();
 		jp3[0][0].setBorder(BorderFactory.createEtchedBorder());
 		jp3[0][1] = new JPanel();
@@ -179,7 +179,7 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 	
 	public void actionPerformed (ActionEvent e) {
 		gridClicked = false;
-		for(int i=0;i<9;i++) // grille cliquée
+		for(int i=0;i<9;i++) // grille cliquÃ©e
 		{
 			for(int j=0;j<9;j++)
 			{
@@ -194,7 +194,7 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 				}
 			}
 		}
-		for(int i=9;i<12;i++) // minipad cliqué
+		for(int i=9;i<12;i++) // minipad cliquÃ©
 		{
 			for(int j=3;j<6;j++)
 			{	
@@ -271,12 +271,12 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 
 	}
 	
-	public void keyReleased(KeyEvent evt) { // méthode non implémentée mais
+	public void keyReleased(KeyEvent evt) { // mÃ©thode non implÃ©mentÃ©e mais
 		// necessaire pour compiler
 
 	}
 	
-	public void keyTyped(KeyEvent evt) { // méthode non implémentée mais
+	public void keyTyped(KeyEvent evt) { // mÃ©thode non implÃ©mentÃ©e mais
 		// necessaire pour compiler
 
 	}
@@ -293,10 +293,10 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 				cases[i][j].addActionListener(this);
 			}
 		}
-		cases[10][6].addActionListener(new ActionListener() { // écouteur du bouton "niveau1"
+		cases[10][6].addActionListener(new ActionListener() { // Ã©couteur du bouton "niveau1"
 			public void actionPerformed(ActionEvent e) {
 			//init();
-			//timer.restart(); // on remet le timer à 0 pour avoir l même temps de jeu à chaque init()
+			//timer.restart(); // on remet le timer Ã  0 pour avoir l mÃªme temps de jeu Ã  chaque init()
 			}
 		});*/
 	}
