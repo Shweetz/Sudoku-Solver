@@ -5,6 +5,11 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.io.RandomAccessFile;
 
+class ResultToGUI {
+	String text;
+	int[][] tab;
+}
+
 @SuppressWarnings("serial")
 public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 	
@@ -14,7 +19,7 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 	JPanel[][] jp2 = new JPanel[1][3];
 	JPanel[][] jp3 = new JPanel[1][3];
 	JButton cases[][] = new JButton [12][9];
-	JTextArea text;
+	JTextArea ihmMessage;
 	JButton options[][] = new JButton [1][2];
 	GridLayout grille, grille2;
 	JMenu menuFichier;
@@ -85,21 +90,22 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 		jp2[0][0] = new JPanel();
 		jp2[0][0].setBorder(BorderFactory.createEtchedBorder());
 		
-		// html pour les retours ligne
-		text = new JTextArea("Appuyer sur R pour reset la grille ou cliquer "
-				+ "sur une case puis T pour reset la case");
-		text.setFont(new java.awt.Font("Helvetica", java.awt.Font.PLAIN, 20));
-		/** On souhaite un retour à ligne automatique : */
-		text.setLineWrap(true);		 
-		/** On souhaite que les mots ne soient pas coupés : */
-		text.setWrapStyleWord(true);
-		text.setSize(500, 800);
-
-		jp2[0][0].setSize(540, 800);
-		jp2[0][0].add(text);
-		panel3.add(jp2[0][0].add(text));
+		ihmMessage = new JTextArea("Commandes :\n"
+				+ "- Entrer un chiffre : le sélectionner dans le pad en bas puis cliquer sur une case pour y coller le chiffre\n"
+				+ "OU cliquer sur une case puis sur un chiffre sur votre clavier\n"
+				+ "- Reset une case : la sélectionner et appuyer sur T ou 0\n"
+				+ "- Reset la grille : appuyer sur R\n"
+				+ "NB : Utiliser les flèches pour se déplacer dans la grille\n");
 		
-		text.addKeyListener(this);
+		ihmMessage.setFont(new java.awt.Font("Helvetica", java.awt.Font.PLAIN, 20));
+		ihmMessage.setLineWrap(true); // Retour ligne auto 
+		ihmMessage.setWrapStyleWord(true); // Mots non coupés par retour ligne
+		ihmMessage.setSize(500, 500);
+
+		jp2[0][0].add(ihmMessage);
+		panel3.add(jp2[0][0].add(ihmMessage));
+		
+		ihmMessage.addKeyListener(this);
 
 		// On crée les zones en-dessous du texte
 		jp3[0][0] = new JPanel();
@@ -111,6 +117,7 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 		jp3[0][2].setBorder(BorderFactory.createEtchedBorder());
 
 		// En-dessous du texte, le bouton "afficher la solution"
+		// html pour les retours ligne
 		cases[9][0] = new JButton("<html><center>Afficher la solution</center></html>");
 		cases[9][0].setFont(new java.awt.Font("Helvetica", java.awt.Font.PLAIN, 20));
 		jp3[0][0].add(cases[9][0]);
@@ -137,7 +144,7 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 		cases[11][4].setFont(new java.awt.Font("Helvetica", java.awt.Font.PLAIN, 25));
 		cases[11][5] = new JButton("9");
 		cases[11][5].setFont(new java.awt.Font("Helvetica", java.awt.Font.PLAIN, 25));
-		//
+		
 		for(int i=9;i<12;i++)
 		{
 			for(int j=3;j<6;j++)
@@ -159,47 +166,37 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 		cases[9][6].addActionListener(this);
 		cases[9][6].addKeyListener(this);
 		
-		/*for(int i=0;i<2;i++)
-		{
-			options[0][i] = new JButton("");
-			options[0][i].setFont(new java.awt.Font("Helvetica", java.awt.Font.PLAIN, 25));
-			options[0][i].setSize(10,10);
-			
-			jp2[0][i].add(options[0][i]);
-			
-			panel2.add(jp2[0][i]);
-			
-			options[0][i].addActionListener(this);
-			
-		}*/
 		c.add(panelGeneral);
 		
 		setVisible(true);		//show();
 	}
 	
 	public void actionPerformed (ActionEvent e) {
+		
 		gridClicked = false;
+		
 		for(int i=0;i<9;i++) // grille cliquée
 		{
 			for(int j=0;j<9;j++)
 			{
-				cases[i][j].setBackground(Color.white);	
+				cases[i][j].setBackground(null);	
 				if(e.getSource() == cases[i][j])
 				{
 					cases[i][j].setText(lastNumberClicked);		
-					cases[i][j].setBackground(Color.red);	
+					cases[i][j].setBackground(Color.green);	
 					gridClicked = true;
 					curI = i;
 					curJ = j;
 				}
 			}
 		}
+		
 		for(int i=9;i<12;i++) // minipad cliqué
 		{
 			for(int j=3;j<6;j++)
 			{	
 				if (gridClicked == false)
-					cases[i][j].setBackground(Color.white);	
+					cases[i][j].setBackground(null);	
 				
 				if(e.getSource() == cases[i][j])
 				{
@@ -208,19 +205,74 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 				}
 			}
 		}
+		
 		if(e.getSource() == cases[9][0]) // Afficher la solution
 		{
-			String fileName = reporterGrilleDansFichier();
-			Main3.mainFromAfficher(fileName);
+			String fileName = reporterGrilleDansFichier(); // IHM -> fichier
+			Main3 game = Main3.mainFromAfficher(fileName, 81); // Lancer calculs
+			
+			// Affcher la grille finie
+			for (int i = 0; i < 81; i++)
+			{
+				cases[i/9][i%9].setBackground(null);
+				if (game.tab[i][10] != 0)
+					cases[i/9][i%9].setText(Integer.toString(game.tab[i][10]));
+			}
+
+			// Affcher le message de fin (difficulté du sudoku)
+			ihmMessage.setText(game.str_ihm_out);
 		}
+		
 		if(e.getSource() == cases[9][6]) // Trouver le prochain chiffre
 		{
-			String fileName = reporterGrilleDansFichier();
-			Main3.mainFromAfficher(fileName);
+			String fileName = reporterGrilleDansFichier(); // IHM -> fichier
+			Main3 game = Main3.mainFromAfficher(fileName, 1); // Lancer calculs
+			
+			// Affcher la grille avec le prochain chiffre
+			String curNumber = "";
+			int curPos = 0;
+			
+			for (int i = 0; i < 81; i++)
+			{
+				cases[i/9][i%9].setBackground(null);
+				
+				if (game.tab[i][10] != 0) // S'il y a un chiffre dans la case
+				{
+					cases[i/9][i%9].setText(Integer.toString(game.tab[i][10]));
+					
+					if (game.tab[i][0] == 3) // Si c'est le dernier chiffre trouvé
+					{
+						cases[i/9][i%9].setBackground(Color.green);
+						curNumber = cases[i/9][i%9].getText();
+						curPos = i;
+					}
+				}
+			}
+			
+			ColorIdenticalNumbers(curNumber, curPos);
+
+			// Affcher le message
+			ihmMessage.setText(game.str_ihm_out);
 		}
 	}
 	
-	public String reporterGrilleDansFichier() { // Options clavier
+	public void ColorIdenticalNumbers(String curNumber, int curPos)
+	{
+		for (int i = 0; i < 81; i++)
+		{
+			if (i != curPos)
+			{
+				cases[i/9][i%9].setBackground(null);
+
+				if (curNumber != "" && cases[i/9][i%9].getText().equals(curNumber))
+				{
+					cases[i/9][i%9].setBackground(Color.yellow);
+				}
+			}
+		}
+	}
+	
+	public String reporterGrilleDansFichier() { // Traduire la grille IHM en fichier
 
 		String fileName = "C:\\Users\\Romain\\workspace\\Sudoku Solver\\customGame.txt";
 		
@@ -251,7 +303,8 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 	
 	public void keyPressed(KeyEvent evt) { // Options clavier
 
-		if (evt.getKeyCode() == KeyEvent.VK_R) // R reset la grille
+		// R reset la grille
+		if (evt.getKeyCode() == KeyEvent.VK_R) 
 		{
 			for(int i=0;i<9;i++)
 			{
@@ -261,14 +314,221 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 				}
 			}
 		}
-		if (evt.getKeyCode() == KeyEvent.VK_T) // T reset la case
+		
+		// T ou 0 reset la case
+		if (evt.getKeyCode() == KeyEvent.VK_T) 
 		{
-			if (curI > -1 && curI < 9 && curJ > -1 && curJ < 9)
+			if (gridClicked == true)
 				cases[curI][curJ].setText("");						
 		}
+		if (evt.getKeyCode() == KeyEvent.VK_0) 
+		{
+			if (gridClicked == true)
+				cases[curI][curJ].setText("");			
+			nextCell();										
+		}
+		if (evt.getKeyCode() == KeyEvent.VK_NUMPAD0) 
+		{
+			if (gridClicked == true)
+				cases[curI][curJ].setText("");			
+			nextCell();									
+		}
 
-		//repaint();
+		// Les flèches permettent de se déplacer dans la grille
+		if (evt.getKeyCode() == KeyEvent.VK_LEFT) 
+		{	
+			prevCell();
+		}
+		if (evt.getKeyCode() == KeyEvent.VK_KP_LEFT) 
+		{
+			prevCell();
+		}
+		if (evt.getKeyCode() == KeyEvent.VK_RIGHT) 
+		{
+			nextCell();
+		}
+		if (evt.getKeyCode() == KeyEvent.VK_KP_RIGHT) 
+		{
+			nextCell();
+		}
+		if (evt.getKeyCode() == KeyEvent.VK_UP) 
+		{
+			if (gridClicked == true && curI > 0)
+			{
+				cases[curI][curJ].setBackground(null);	
+				cases[curI-1][curJ].setBackground(Color.green);
+				curI--;				
+			}
+			
+			ColorIdenticalNumbers(cases[curI][curJ].getText(), curI*9 + curJ);
+		}
+		if (evt.getKeyCode() == KeyEvent.VK_KP_UP) 
+		{
+			if (gridClicked == true && curI > 0)
+			{
+				cases[curI][curJ].setBackground(null);	
+				cases[curI-1][curJ].setBackground(Color.green);
+				curI--;				
+			}
+			
+			ColorIdenticalNumbers(cases[curI][curJ].getText(), curI*9 + curJ);
+		}
+		if (evt.getKeyCode() == KeyEvent.VK_DOWN) 
+		{
+			if (gridClicked == true && curI < 8)	
+			{
+				cases[curI][curJ].setBackground(null);
+				cases[curI+1][curJ].setBackground(Color.green);
+				curI++;				
+			}
+			
+			ColorIdenticalNumbers(cases[curI][curJ].getText(), curI*9 + curJ);
+		}
+		if (evt.getKeyCode() == KeyEvent.VK_KP_DOWN) 
+		{
+			if (gridClicked == true && curI < 8)
+			{
+				cases[curI][curJ].setBackground(null);	
+				cases[curI+1][curJ].setBackground(Color.green);
+				curI++;				
+			}
+			
+			ColorIdenticalNumbers(cases[curI][curJ].getText(), curI*9 + curJ);
+		}
+		
+		// Entrer un chiffre dans une case et passer à la suivante
+		if (evt.getKeyCode() == KeyEvent.VK_1 && gridClicked == true) 
+		{
+			cases[curI][curJ].setText("1");		
+			nextCell();
+		}
+		if (evt.getKeyCode() == KeyEvent.VK_NUMPAD1 && gridClicked == true) 
+		{
+			cases[curI][curJ].setText("1");		
+			nextCell();			
+		}
+		if (evt.getKeyCode() == KeyEvent.VK_2 && gridClicked == true) 
+		{
+			cases[curI][curJ].setText("2");		
+			nextCell();					
+		}
+		if (evt.getKeyCode() == KeyEvent.VK_NUMPAD2 && gridClicked == true) 
+		{
+			cases[curI][curJ].setText("2");		
+			nextCell();						
+		}
+		if (evt.getKeyCode() == KeyEvent.VK_3 && gridClicked == true) 
+		{
+			cases[curI][curJ].setText("3");		
+			nextCell();							
+		}
+		if (evt.getKeyCode() == KeyEvent.VK_NUMPAD3 && gridClicked == true) 
+		{
+			cases[curI][curJ].setText("3");		
+			nextCell();					
+		}
+		if (evt.getKeyCode() == KeyEvent.VK_4 && gridClicked == true) 
+		{
+			cases[curI][curJ].setText("4");		
+			nextCell();						
+		}
+		if (evt.getKeyCode() == KeyEvent.VK_NUMPAD4 && gridClicked == true) 
+		{
+			cases[curI][curJ].setText("4");		
+			nextCell();						
+		}
+		if (evt.getKeyCode() == KeyEvent.VK_5 && gridClicked == true) 
+		{
+			cases[curI][curJ].setText("5");		
+			nextCell();						
+		}
+		if (evt.getKeyCode() == KeyEvent.VK_NUMPAD5 && gridClicked == true) 
+		{
+			cases[curI][curJ].setText("5");		
+			nextCell();						
+		}
+		if (evt.getKeyCode() == KeyEvent.VK_6 && gridClicked == true) 
+		{
+			cases[curI][curJ].setText("6");		
+			nextCell();							
+		}
+		if (evt.getKeyCode() == KeyEvent.VK_NUMPAD6 && gridClicked == true) 
+		{
+			cases[curI][curJ].setText("6");		
+			nextCell();					
+		}
+		if (evt.getKeyCode() == KeyEvent.VK_7 && gridClicked == true) 
+		{
+			cases[curI][curJ].setText("7");		
+			nextCell();						
+		}
+		if (evt.getKeyCode() == KeyEvent.VK_NUMPAD7 && gridClicked == true) 
+		{
+			cases[curI][curJ].setText("7");		
+			nextCell();					
+		}
+		if (evt.getKeyCode() == KeyEvent.VK_8 && gridClicked == true) 
+		{
+			cases[curI][curJ].setText("8");		
+			nextCell();						
+		}
+		if (evt.getKeyCode() == KeyEvent.VK_NUMPAD8 && gridClicked == true) 
+		{
+			cases[curI][curJ].setText("8");		
+			nextCell();					
+		}
+		if (evt.getKeyCode() == KeyEvent.VK_9 && gridClicked == true) 
+		{
+			cases[curI][curJ].setText("9");		
+			nextCell();							
+		}
+		if (evt.getKeyCode() == KeyEvent.VK_NUMPAD9 && gridClicked == true) 
+		{
+			cases[curI][curJ].setText("9");		
+			nextCell();					
+		}
+	}
+	
+	public void nextCell() {
+		
+		if (gridClicked == true && (curI < 8 || curJ < 8))
+		{
+			cases[curI][curJ].setBackground(null);	
+			if (curJ < 8)
+			{
+				cases[curI][curJ+1].setBackground(Color.green);
+				curJ++;		
+			}
+			else
+			{
+				cases[curI+1][0].setBackground(Color.green);
+				curI++;		
+				curJ = 0;		
+			}
+		}
+		
+		ColorIdenticalNumbers(cases[curI][curJ].getText(), curI*9 + curJ);
+	}
 
+	public void prevCell() {
+		
+		if (gridClicked == true && (curI > 0 || curJ > 0))
+		{
+			cases[curI][curJ].setBackground(null);
+			if (curJ > 0)
+			{
+				cases[curI][curJ-1].setBackground(Color.green);
+				curJ--;	
+			}
+			else
+			{
+				cases[curI-1][8].setBackground(Color.green);
+				curI--;		
+				curJ = 8;		
+			}
+		}
+		
+		ColorIdenticalNumbers(cases[curI][curJ].getText(), curI*9 + curJ);
 	}
 	
 	public void keyReleased(KeyEvent evt) { // méthode non implémentée mais
