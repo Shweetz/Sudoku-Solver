@@ -16,7 +16,7 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 	Container c;
 	JPanel panel, panel2, panel3, panel4, panelGeneral, panelHaut;
 	JPanel[][] jp = new JPanel[3][3];
-	JPanel[][] jp2 = new JPanel[1][3];
+	JPanel jp2;
 	JPanel[][] jp3 = new JPanel[1][3];
 	JButton cases[][] = new JButton [12][9];
 	JTextArea ihmMessage;
@@ -44,10 +44,10 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 		panel2.setLayout(new GridLayout(0,1));
 		
 		panel3 = new JPanel();
+		panel3.setMaximumSize(new Dimension(500, 100));
 		
 		panel4 = new JPanel();
 		panel4.setLayout(grille);
-		//panel3.setSize(500, 250);
 		
 		panelGeneral = new JPanel();
 		panelGeneral.setLayout(new GridLayout(0,1));
@@ -87,23 +87,27 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 		}
 
 		// On crée la zone de texte
-		jp2[0][0] = new JPanel();
-		jp2[0][0].setBorder(BorderFactory.createEtchedBorder());
+		jp2 = new JPanel();
+		jp2.setBorder(BorderFactory.createEtchedBorder());
 		
-		ihmMessage = new JTextArea("Commandes :\n"
+		ihmMessage = new JTextArea(9,36);
+		ihmMessage.setText("Commandes :\n"
 				+ "- Entrer un chiffre : le sélectionner dans le pad en bas puis cliquer sur une case pour y coller le chiffre\n"
 				+ "OU cliquer sur une case puis sur un chiffre sur votre clavier\n"
 				+ "- Reset une case : la sélectionner et appuyer sur T ou 0\n"
 				+ "- Reset la grille : appuyer sur R\n"
-				+ "NB : Utiliser les flèches pour se déplacer dans la grille\n");
+				+ "NB : Utiliser les flèches pour se déplacer dans la grille");
 		
-		ihmMessage.setFont(new java.awt.Font("Helvetica", java.awt.Font.PLAIN, 20));
+		ihmMessage.setFont(new java.awt.Font("Helvetica", java.awt.Font.PLAIN, 18));
+		JScrollPane scrollPane = new JScrollPane(ihmMessage);
+		ihmMessage.setEditable(false);
 		ihmMessage.setLineWrap(true); // Retour ligne auto 
 		ihmMessage.setWrapStyleWord(true); // Mots non coupés par retour ligne
-		ihmMessage.setSize(500, 500);
+		ihmMessage.setSize(500, 100);
+		ihmMessage.setMaximumSize(new Dimension(500, 100));
 
-		jp2[0][0].add(ihmMessage);
-		panel3.add(jp2[0][0].add(ihmMessage));
+		jp2.add(scrollPane);
+		panel3.add(jp2.add(scrollPane));
 		
 		ihmMessage.addKeyListener(this);
 
@@ -274,7 +278,7 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 	
 	public String reporterGrilleDansFichier() { // Traduire la grille IHM en fichier
 
-		String fileName = "C:\\Users\\Romain\\workspace\\Sudoku Solver\\customGame.txt";
+		String fileName = "customGame.txt";
 		
 		try {
 			
@@ -541,28 +545,10 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 
 	}
 	
-	public void init() {
-		
-		//requestFocus();
-		//addKeyListener(this);
-		
-		/*for(int i=10;i<13;i++)
-		{
-			for(int j=3;j<6;j++)
-			{	
-				cases[i][j].addActionListener(this);
-			}
-		}
-		cases[10][6].addActionListener(new ActionListener() { // écouteur du bouton "niveau1"
-			public void actionPerformed(ActionEvent e) {
-			//init();
-			//timer.restart(); // on remet le timer à 0 pour avoir l même temps de jeu à chaque init()
-			}
-		});*/
+	/*public void init() {
 	}
 	
-	/*public void start() {
-		addKeyListener(this);
+	public void start() {
 	}*/
 	
 	public static void main(String[] args)

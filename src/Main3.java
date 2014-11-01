@@ -6,7 +6,7 @@ public class Main3
 	int[] nbOccurences = new int[10];
 	boolean initialisationTerminee = false;
 	int nombreChiffresRemplis = 0;
-	String str_ihm_out;
+	String str_ihm_out = "";
 	
 	int[][] tab = new int[81][11];
 	
@@ -164,16 +164,15 @@ public class Main3
 					str_out += ".\n";
 				
 				if (i%27==26 && i!=80)
-					str_out += "-  -  - + -  -  - + -  -  -\n\n";
+					str_out += "-  -  - + -  -  - + -  -  -\n";
 			}	
 		}
-		System.out.print(str_out); 
+		System.out.println(str_out); 
 	}
 	
 	boolean TrouverChiffreSuivant()
 	{
 		int compteur;
-		String str_out;
 		
 		for (int valeur=1; valeur<10; valeur++) // On va faire tous les tests valeur par valeur
 		{
@@ -266,12 +265,7 @@ public class Main3
 						
 						if (compteur==1)
 						{
-							str_out = "La valeur " + valeur;
-							str_out += " est la seule possible ligne " + (ligne+1);
-							str_out += ", colonne " + (colonne+1) + ".";
-							System.out.println(str_out);
-							str_ihm_out = str_out;
-							EntrerValeur(ligne+1, colonne+1, valeur);
+							CompleterCase(ligne, colonne, valeur);
 							return true;
 						}
 					}
@@ -309,7 +303,7 @@ public class Main3
 			str_out += "à droite ";
 		str_out += "n'a qu'une possibilité.";
 		System.out.println(str_out);
-		str_ihm_out = str_out;
+		str_ihm_out += str_out;
 		EntrerValeur(j/9 + 1, j%9 + 1, valeur);
 	}
 	
@@ -324,7 +318,7 @@ public class Main3
 		str_out = "Le chiffre " + valeur + " de la " + (i/9 + 1);
 		str_out += "e ligne n'a qu'une possibilité.";
 		System.out.println(str_out);
-		str_ihm_out = str_out;
+		str_ihm_out += str_out;
 		EntrerValeur(i/9 + 1, j%9 + 1, valeur);
 	}
 
@@ -339,8 +333,19 @@ public class Main3
 		str_out = "Le chiffre " + valeur + " de la " + (i + 1) ;
 		str_out += "e colonne n'a qu'une possibilité.";
 		System.out.println(str_out);
-		str_ihm_out = str_out;
+		str_ihm_out += str_out;
 		EntrerValeur(j/9 + 1, i + 1, valeur);
+	}
+
+	void CompleterCase(int ligne, int colonne, int valeur)
+	{
+		String str_out;
+		str_out = "La valeur " + valeur;
+		str_out += " est la seule possible ligne " + (ligne+1);
+		str_out += ", colonne " + (colonne+1) + ".";
+		System.out.println(str_out);
+		str_ihm_out += str_out;
+		EntrerValeur(ligne+1, colonne+1, valeur);
 	}
 
 	boolean Algo2()
@@ -389,7 +394,7 @@ public class Main3
 						}
 						if (RechercheFructueuse)
 						{	
-							str_out = "Algorithme de niveau 2 :";
+							str_out = "<b>Niveau 2 :</b>";
 							str_out += " le chiffre " + valeur;
 							str_out += " de la ligne " + (ligne+1);
 							str_out += " est dans la région ";
@@ -406,9 +411,9 @@ public class Main3
 							if (compteur==5)
 								str_out += "à droite, ";
 							str_out += "donc pas de " + valeur;
-							str_out += " dans le reste de la région.";
-							System.out.println(str_out);
-							str_ihm_out = str_out;
+							str_out += " dans le reste de la région.\n";
+							System.out.print(str_out);
+							str_ihm_out += str_out;
 							return RechercheFructueuse;
 						}
 					}
@@ -452,7 +457,7 @@ public class Main3
 									
 							if (RechercheFructueuse)
 							{	
-								str_out = "Algorithme de niveau 2 :";
+								str_out = "<b>Niveau 2 :</b>";
 								str_out += " le chiffre " + valeur;
 								str_out += " de la région ";
 								if (ligne==0)
@@ -469,9 +474,9 @@ public class Main3
 									str_out += "à droite ";
 								str_out += "est dans la ligne " + (ligne + 14 - compteur);
 								str_out += " donc pas de " + valeur;
-								str_out += " dans le reste de la ligne.";
-								System.out.println(str_out);
-								str_ihm_out = str_out;
+								str_out += " dans le reste de la ligne.\n";
+								System.out.print(str_out);
+								str_ihm_out += str_out;
 								return RechercheFructueuse;
 							}
 						}
@@ -518,7 +523,7 @@ public class Main3
 						}
 						if (RechercheFructueuse)
 						{
-							str_out = "Algorithme de niveau 2 :";
+							str_out = "<b>Niveau 2 :</b>";
 							str_out += " le chiffre " + valeur;
 							str_out += " de la colonne " + (colonne+1);
 							str_out += " est dans la région ";
@@ -535,9 +540,9 @@ public class Main3
 							if (i==6)
 								str_out += "à droite, ";
 							str_out += "donc pas de " + valeur;
-							str_out += " dans le reste de la région.";
-							System.out.println(str_out);
-							str_ihm_out = str_out;
+							str_out += " dans le reste de la région.\n";
+							System.out.print(str_out);
+							str_ihm_out += str_out;
 							return RechercheFructueuse;
 						}
 					}
@@ -581,7 +586,7 @@ public class Main3
 									
 							if (RechercheFructueuse)
 							{	
-								str_out = "Algorithme de niveau 2 :";
+								str_out = "<b>Niveau 2 :</b>";
 								str_out += " le chiffre " + valeur;
 								str_out += " de la région ";
 								if (ligne==0)
@@ -598,9 +603,9 @@ public class Main3
 									str_out += "à droite ";
 								str_out += "est dans la colonne " + (colonne + 14 - compteur);
 								str_out += " donc pas de " + valeur;
-								str_out += " dans le reste de la colonne.";
-								System.out.println(str_out);
-								str_ihm_out = str_out;
+								str_out += " dans le reste de la colonne.\n";
+								System.out.print(str_out);
+								str_ihm_out += str_out;
 								return RechercheFructueuse;
 							}
 						}
@@ -694,9 +699,9 @@ public class Main3
 					
 					if (casesPossibles > nombreCasesATester)
 					{
-						str_out = "Sudoku impossible, n valeurs doivent être dans n-1 cases !";
-						System.out.println(str_out);
-						str_ihm_out = str_out;
+						str_out = "Sudoku impossible, n valeurs doivent être dans n-1 cases !\n";
+						System.out.print(str_out);
+						str_ihm_out += str_out;
 					}
 					
 					else if (casesPossibles == nombreCasesATester)
@@ -727,7 +732,7 @@ public class Main3
 						if (RechercheFructueuse) // On affiche les infos
 						{
 							d=1;
-							str_out = "Algorithme de niveau 3 :";
+							str_out = "Niveau 3 :";
 							str_out += " dans la ligne " + (ligne+1) + ", les seules valeurs possibles";
 							str_out += " dans les colonnes ";
 							
@@ -758,9 +763,9 @@ public class Main3
 										str_out += m + ", ";
 								}
 							}
-							str_out += "donc ces valeurs ne sont pas dans le reste de la ligne."; 
-							System.out.println(str_out);
-							str_ihm_out = str_out;
+							str_out += "donc ces valeurs ne sont pas dans le reste de la ligne.\n"; 
+							System.out.print(str_out);
+							str_ihm_out += str_out;
 							return RechercheFructueuse;
 						}
 					}
@@ -841,9 +846,9 @@ public class Main3
 					
 					if (casesPossibles > nombreCasesATester)
 					{
-						str_out = "Sudoku impossible, n valeurs doivent être dans n-1 cases !";
-						System.out.println(str_out);
-						str_ihm_out = str_out;
+						str_out = "Sudoku impossible, n valeurs doivent être dans n-1 cases !\n";
+						System.out.print(str_out);
+						str_ihm_out += str_out;
 					}
 					
 					else if (casesPossibles == nombreCasesATester)
@@ -874,7 +879,7 @@ public class Main3
 						if (RechercheFructueuse) // On affiche les infos
 						{
 							d=1;
-							str_out = "Algorithme de niveau 3 :";
+							str_out = "Niveau 3 :";
 							str_out += " dans la colonne " + (colonne+1) + ", les seules valeurs possibles";
 							str_out += " dans les lignes ";
 							
@@ -906,9 +911,9 @@ public class Main3
 										str_out += m + ", ";
 								}
 							}
-							str_out += "donc ces valeurs ne sont pas dans le reste de la colonne.";
-							System.out.println(str_out);
-							str_ihm_out = str_out;
+							str_out += "donc ces valeurs ne sont pas dans le reste de la colonne.\n";
+							System.out.print(str_out);
+							str_ihm_out += str_out;
 							return RechercheFructueuse;
 						}
 					}
@@ -993,9 +998,9 @@ public class Main3
 							
 							if (casesPossibles > nombreCasesATester)
 							{
-								str_out = "Sudoku impossible, n valeurs doivent être dans n-1 cases !";
-								System.out.println(str_out);
-								str_ihm_out = str_out;
+								str_out = "Sudoku impossible, n valeurs doivent être dans n-1 cases !\n";
+								System.out.print(str_out);
+								str_ihm_out += str_out;
 							}
 							
 							else if (casesPossibles == nombreCasesATester)
@@ -1026,8 +1031,8 @@ public class Main3
 								if (RechercheFructueuse) // On affiche les infos
 								{
 									d=1;
-									str_out = "Algorithme de niveau 3 : ";
-									str_out += "dans la région ";
+									str_out = "Niveau 3 :";
+									str_out += " dans la région ";
 									if (ligne==0)
 										str_out += "en haut ";
 									if (ligne==3 && colonne!=3)
@@ -1070,9 +1075,9 @@ public class Main3
 												str_out += m + ", ";
 										}
 									}
-									str_out += "donc ces valeurs ne sont pas dans le reste de la région.";
-									System.out.println(str_out);
-									str_ihm_out = str_out;
+									str_out += "donc ces valeurs ne sont pas dans le reste de la région.\n";
+									System.out.print(str_out);
+									str_ihm_out += str_out;
 									return RechercheFructueuse;
 								}
 							}
@@ -1198,7 +1203,7 @@ public class Main3
 
 											if (RechercheFructueuse) // On affiche les infos
 											{
-												str_out = "Algorithme de niveau 4 :";
+												str_out = "Niveau 4 :";
 												str_out += " dans les lignes ";
 												for (int i=0; i<9-nombreNecessaire; i++)
 													str_out += lignesOkay[i]+1 + ", ";	
@@ -1210,9 +1215,9 @@ public class Main3
 													str_out += colonnesOkay[i] + ", ";	
 												
 												str_out += "donc pas de " + valeur + " dans le reste ";
-												str_out += "des " + (9-nombreNecessaire) + " colonnes.";
-												System.out.println(str_out);
-												str_ihm_out = str_out;
+												str_out += "des " + (9-nombreNecessaire) + " colonnes.\n";
+												System.out.print(str_out);
+												str_ihm_out += str_out;
 												
 												return RechercheFructueuse;
 											}									
@@ -1321,7 +1326,7 @@ public class Main3
 
 											if (RechercheFructueuse) // On affiche les infos
 											{
-												str_out = "Algorithme de niveau 4 :";
+												str_out = "Niveau 4 :";
 												str_out += " dans les colonnes ";
 												for (int i=0; i<9-nombreNecessaire; i++)
 													str_out += lignesOkay[i]+1 + ", ";	
@@ -1333,9 +1338,9 @@ public class Main3
 													str_out += colonnesOkay[i] + ", ";	
 												
 												str_out += "donc pas de " + valeur + " dans le reste ";
-												str_out += "des " + (9-nombreNecessaire) + " lignes.";
-												System.out.println(str_out);
-												str_ihm_out = str_out;
+												str_out += "des " + (9-nombreNecessaire) + " lignes.\n";
+												System.out.print(str_out);
+												str_ihm_out += str_out;
 												
 												return RechercheFructueuse;
 											}									
@@ -1377,8 +1382,8 @@ public class Main3
 			raf.close();
 		}
 		catch (Exception e) {
-			str_out = fileName + " not found: " + e.toString();
-			System.out.println(str_out);
+			str_out = fileName + " not found: " + e.toString() + "\n";
+			System.out.print(str_out);
 			str_ihm_out = str_out;
 		}
 		
@@ -1413,7 +1418,7 @@ public class Main3
 							else
 								str_out += "Sudoku non résolvable, vérifier les chiffres entrés !";
 							System.out.println(str_out);
-							str_ihm_out = str_out;
+							str_ihm_out += str_out;
 							nombre = nombreChiffresATrouver;
 						
 						}
@@ -1435,7 +1440,7 @@ public class Main3
 			if (nombreChiffresRemplis==81)
 			{
 				nombre = nombreChiffresATrouver;
-				str_out = "Sudoku résolu ! Difficulté : " + difficulté + "/4 ";
+				str_out = "\nSudoku résolu ! Difficulté : " + difficulté + "/4 ";
 				if (difficulté==1)
 					str_out += "(facile).";
 				if (difficulté==2)
@@ -1445,7 +1450,7 @@ public class Main3
 				if (difficulté==4)
 					str_out += "(difficile).";
 				System.out.println(str_out);
-				str_ihm_out = str_out;
+				str_ihm_out += str_out;
 			}
 		}
 	}
