@@ -3,6 +3,7 @@
 import javax.swing.*;
 
 import java.awt.event.*;
+import java.io.File;
 import java.io.RandomAccessFile;
 
 class ResultToGUI {
@@ -28,12 +29,142 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 	boolean gridClicked = false;
 	int curI = -1, curJ = -1;
 	
-	public Afficher2()	{
+	public Afficher2(int largeur, int hauteur)	{
 	//on cree la fenetre
 		super ("Sudoku");
 		
-		setSize(540,1000);
+		setSize(largeur, hauteur);
 		
+		creerMenus();        		
+		creerInterface();
+		
+		setVisible(true);		//show();
+	}
+	
+	private void creerMenus() 
+	{
+		// Menu Fichier
+        JMenu menuFichier = new JMenu("Fichier");
+        menuFichier.setMnemonic(KeyEvent.VK_F);
+        
+        ActionListener a1 = new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+            	for(int i=0;i<9;i++)
+    			{
+    				for(int j=0;j<9;j++)
+    				{
+    					cases[i][j].setText("");						
+    				}
+    			}
+            }
+        };
+        ajouterItem("Nouveau", menuFichier, a1, KeyEvent.VK_R); // Nouveau reset la grille
+        
+        ActionListener a2 = new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+            	chargerFichier();
+            }
+        };
+        ajouterItem("Charger", menuFichier, a2, KeyEvent.VK_L);
+        
+        /*ActionListener a3 = new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+            	enregistrerFichier();
+            }
+        };
+        ajouterItem("Enregistrer", menuFichier, a3);*/
+        
+        ActionListener a4 = new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+            	enregistrerSousFichier();
+            }
+        };
+        ajouterItem("Enregistrer sous", menuFichier, a4, KeyEvent.VK_S);
+
+        // Menu Autre
+        JMenu menuAutre = new JMenu("Autre");
+        ActionListener a10 = new ActionListener(){
+                public void actionPerformed(ActionEvent e){//sauveGarder();
+                	//}
+                }
+        };
+        ajouterItem("TODO", menuAutre, a10);
+        
+		JMenuBar barreDeMenu = new JMenuBar();
+		barreDeMenu.add(menuFichier);
+		barreDeMenu.add(menuAutre);
+		this.setJMenuBar(barreDeMenu);
+	}
+	
+	private void ajouterItem(String intitule, JMenu menu, ActionListener a)
+	{
+        JMenuItem item = new JMenuItem(intitule);
+        menu.add(item);
+        item.addActionListener(a);
+	}
+	
+	private void ajouterItem(String intitule, JMenu menu, ActionListener a, int key)
+	{
+        JMenuItem item = new JMenuItem(intitule);
+        menu.add(item);
+        item.addActionListener(a);
+        item.setAccelerator(KeyStroke.getKeyStroke(key, ActionEvent.CTRL_MASK));
+	}
+	
+	private void chargerFichier()
+	{
+		// Utiliser jnlp si possible : FileOpenService fos;
+		
+		// Dossier d'ouverture de l'explorateur
+    	JFileChooser dialogue = new JFileChooser(new File("./Testing Sudokus")); 
+    	File fichier;
+    	
+    	if (dialogue.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+    		fichier = dialogue.getSelectedFile();
+    		
+    		// On remplit l'IHM
+    		try {
+    			RandomAccessFile raf = new RandomAccessFile(fichier, "r");
+    			String ligne;
+    			
+    			for (int i = 0; (ligne = raf.readLine()) != null; i++) {
+    				for (int j = 0; j < ligne.length(); ++j)
+    				{
+    					char c = ligne.charAt(j);
+    					if (c != '.')
+    						cases[i][j].setText(Character.toString(c));
+    					else
+    						cases[i][j].setText("");
+    				}
+    			}
+    			raf.close();
+    		}
+    		catch (Exception e) {
+    			System.out.print(fichier + " not found: " + e.toString() + "\n");
+    			ihmMessage.setText(fichier + " not found: " + e.toString() + "\n");
+    		}
+    	}	
+	}		
+	
+	/*private void enregistrerFichier()
+	{
+		String fileName = reporterGrilleDansFichier("customGame.txt"); // IHM -> fichier
+	}*/
+	
+	private void enregistrerSousFichier()
+	{
+		// Utiliser jnlp si possible : FileOpenService fos;
+		
+		// Dossier d'ouverture de l'explorateur
+    	JFileChooser dialogue = new JFileChooser(new File("./Testing Sudokus")); 
+    	
+    	if (dialogue.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+    		reporterGrilleDansFichier(dialogue.getSelectedFile().toString()); // IHM -> fichier
+    	}
+	}
+	
+	private void creerInterface()
+	{
 		c = getContentPane();
 		panel = new JPanel();
 		grille = new GridLayout(0,3);
@@ -171,8 +302,7 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 		cases[9][6].addKeyListener(this);
 		
 		c.add(panelGeneral);
-		
-		setVisible(true);		//show();
+	
 	}
 	
 	public void actionPerformed (ActionEvent e) {
@@ -212,7 +342,7 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 		
 		if(e.getSource() == cases[9][0]) // Afficher la solution
 		{
-			String fileName = reporterGrilleDansFichier(); // IHM -> fichier
+			String fileName = reporterGrilleDansFichier("customGame.txt"); // IHM -> fichier
 			Main3 game = Main3.mainFromAfficher(fileName, 81); // Lancer calculs
 			
 			// Affcher la grille finie
@@ -229,7 +359,7 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 		
 		if(e.getSource() == cases[9][6]) // Trouver le prochain chiffre
 		{
-			String fileName = reporterGrilleDansFichier(); // IHM -> fichier
+			String fileName = reporterGrilleDansFichier("customGame.txt"); // IHM -> fichier
 			Main3 game = Main3.mainFromAfficher(fileName, 1); // Lancer calculs
 			
 			// Affcher la grille avec le prochain chiffre
@@ -276,10 +406,8 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 		}
 	}
 	
-	public String reporterGrilleDansFichier() { // Traduire la grille IHM en fichier
+	public String reporterGrilleDansFichier(String fileName) { // Traduire la grille IHM en fichier
 
-		String fileName = "customGame.txt";
-		
 		try {
 			
 			RandomAccessFile raf = new RandomAccessFile(fileName, "rw");
@@ -307,7 +435,7 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 	
 	public void keyPressed(KeyEvent evt) { // Options clavier
 
-		// R reset la grille
+		// R reset la grille (techniquement inutile après l'accélérateur)
 		if (evt.getKeyCode() == KeyEvent.VK_R) 
 		{
 			for(int i=0;i<9;i++)
@@ -553,6 +681,6 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 	
 	public static void main(String[] args)
 	{
-		new Afficher2();
+		new Afficher2(540, 1000);
 	}
 }
