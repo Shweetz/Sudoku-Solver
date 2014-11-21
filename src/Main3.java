@@ -394,7 +394,7 @@ public class Main3
 						}
 						if (RechercheFructueuse)
 						{	
-							str_out = "<b>Niveau 2 :</b>";
+							str_out = "Niveau 2 :";
 							str_out += " le chiffre " + valeur;
 							str_out += " de la ligne " + (ligne+1);
 							str_out += " est dans la région ";
@@ -457,7 +457,7 @@ public class Main3
 									
 							if (RechercheFructueuse)
 							{	
-								str_out = "<b>Niveau 2 :</b>";
+								str_out = "Niveau 2 :";
 								str_out += " le chiffre " + valeur;
 								str_out += " de la région ";
 								if (ligne==0)
@@ -523,7 +523,7 @@ public class Main3
 						}
 						if (RechercheFructueuse)
 						{
-							str_out = "<b>Niveau 2 :</b>";
+							str_out = "Niveau 2 :";
 							str_out += " le chiffre " + valeur;
 							str_out += " de la colonne " + (colonne+1);
 							str_out += " est dans la région ";
@@ -586,7 +586,7 @@ public class Main3
 									
 							if (RechercheFructueuse)
 							{	
-								str_out = "<b>Niveau 2 :</b>";
+								str_out = "Niveau 2 :";
 								str_out += " le chiffre " + valeur;
 								str_out += " de la région ";
 								if (ligne==0)
@@ -1437,10 +1437,10 @@ public class Main3
 				nombre++;
 			}
 			
-			if (nombreChiffresRemplis==81)
+			if (nombreChiffresRemplis==81 && nombreChiffresATrouver==81)
 			{
 				nombre = nombreChiffresATrouver;
-				str_out = "\nSudoku résolu ! Difficulté : " + difficulté + "/4 ";
+				str_out = "Sudoku résolu ! Difficulté : " + difficulté + "/4 ";
 				if (difficulté==1)
 					str_out += "(facile).";
 				if (difficulté==2)
@@ -1449,8 +1449,8 @@ public class Main3
 					str_out += "(assez difficile).";
 				if (difficulté==4)
 					str_out += "(difficile).";
-				System.out.println(str_out);
-				str_ihm_out += str_out;
+				System.out.println("\n" + str_out);
+				str_ihm_out = str_out;
 			}
 		}
 	}

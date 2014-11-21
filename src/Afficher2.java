@@ -58,7 +58,7 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
     			}
             }
         };
-        ajouterItem("Nouveau", menuFichier, a1, KeyEvent.VK_R); // Nouveau reset la grille
+        ajouterItem("Nouveau", menuFichier, a1, KeyEvent.VK_N); // Nouveau reset la grille
         
         ActionListener a2 = new ActionListener(){
             public void actionPerformed(ActionEvent e){
@@ -157,6 +157,7 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 		
 		// Dossier d'ouverture de l'explorateur
     	JFileChooser dialogue = new JFileChooser(new File("./Testing Sudokus")); 
+    	dialogue.setSelectedFile(new File("exemple.txt"));
     	
     	if (dialogue.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
     		reporterGrilleDansFichier(dialogue.getSelectedFile().toString()); // IHM -> fichier
@@ -166,27 +167,21 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 	private void creerInterface()
 	{
 		c = getContentPane();
+
+		panelGeneral = new JPanel();
+		panelGeneral.setLayout(new GridLayout(0,2));
 		panel = new JPanel();
-		grille = new GridLayout(0,3);
-		panel.setLayout(grille);
-		//panel.setSize(500, 500);
-		
+		panel.setLayout(new GridLayout(0,3));
 		panel2 = new JPanel();
 		panel2.setLayout(new GridLayout(0,1));
-		
 		panel3 = new JPanel();
-		panel3.setMaximumSize(new Dimension(500, 100));
-		
 		panel4 = new JPanel();
-		panel4.setLayout(grille);
+		panel4.setLayout(new GridLayout(0,3));		
 		
-		panelGeneral = new JPanel();
-		panelGeneral.setLayout(new GridLayout(0,1));
-		//panelGeneral.add(panel, BorderLayout.CENTER);
-		panelGeneral.add(panel);
-		panelGeneral.add(panel2);
 		panel2.add(panel3);
 		panel2.add(panel4);
+		panelGeneral.add(panel);
+		panelGeneral.add(panel2);
 		
 		// On crée les régions
 		for(int i=0;i<3;i++)
@@ -225,8 +220,8 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 		ihmMessage.setText("Commandes :\n"
 				+ "- Entrer un chiffre : le sélectionner dans le pad en bas puis cliquer sur une case pour y coller le chiffre\n"
 				+ "OU cliquer sur une case puis sur un chiffre sur votre clavier\n"
-				+ "- Reset une case : la sélectionner et appuyer sur T ou 0\n"
-				+ "- Reset la grille : appuyer sur R\n"
+				+ "- Reset une case : la sélectionner et appuyer sur 0\n"
+				+ "- Reset la grille : appuyer sur Ctrl + N\n"
 				+ "NB : Utiliser les flèches pour se déplacer dans la grille");
 		
 		ihmMessage.setFont(new java.awt.Font("Helvetica", java.awt.Font.PLAIN, 18));
@@ -234,8 +229,6 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 		ihmMessage.setEditable(false);
 		ihmMessage.setLineWrap(true); // Retour ligne auto 
 		ihmMessage.setWrapStyleWord(true); // Mots non coupés par retour ligne
-		ihmMessage.setSize(500, 100);
-		ihmMessage.setMaximumSize(new Dimension(500, 100));
 
 		jp2.add(scrollPane);
 		panel3.add(jp2.add(scrollPane));
@@ -317,10 +310,12 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 				if(e.getSource() == cases[i][j])
 				{
 					cases[i][j].setText(lastNumberClicked);		
-					cases[i][j].setBackground(Color.green);	
+					ColorGrid(cases[i][j].getText(), i*9 + j);
 					gridClicked = true;
 					curI = i;
 					curJ = j;
+					i = 10;
+					j = 10;
 				}
 			}
 		}
@@ -335,6 +330,7 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 				if(e.getSource() == cases[i][j])
 				{
 					cases[i][j].setBackground(Color.cyan);
+					ColorGrid(cases[i][j].getText(), 82);
 					lastNumberClicked = cases[i][j].getText();
 				}
 			}
@@ -376,34 +372,35 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 					
 					if (game.tab[i][0] == 3) // Si c'est le dernier chiffre trouvé
 					{
-						cases[i/9][i%9].setBackground(Color.green);
 						curNumber = cases[i/9][i%9].getText();
 						curPos = i;
 					}
 				}
 			}
 			
-			ColorIdenticalNumbers(curNumber, curPos);
+			ColorGrid(curNumber, curPos);
 
 			// Affcher le message
 			ihmMessage.setText(game.str_ihm_out);
 		}
 	}
 	
-	public void ColorIdenticalNumbers(String curNumber, int curPos)
+	public void ColorGrid(String curNumber, int curPos)
 	{
+		// On met toutes le background des cases par défaut, et on modifie si nombre identique
 		for (int i = 0; i < 81; i++)
 		{
-			if (i != curPos)
-			{
-				cases[i/9][i%9].setBackground(null);
+			cases[i/9][i%9].setBackground(null);
 
-				if (curNumber != "" && cases[i/9][i%9].getText().equals(curNumber))
-				{
-					cases[i/9][i%9].setBackground(Color.yellow);
-				}
+			if (curNumber != "" && cases[i/9][i%9].getText().equals(curNumber))
+			{
+				cases[i/9][i%9].setBackground(Color.yellow);
 			}
 		}
+		
+		// Si on a cliqué sur le grille, on met le fond de la case courante en vert
+		if (curPos <= 81)
+			cases[curPos/9][curPos%9].setBackground(Color.green);
 	}
 	
 	public String reporterGrilleDansFichier(String fileName) { // Traduire la grille IHM en fichier
@@ -435,7 +432,7 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 	
 	public void keyPressed(KeyEvent evt) { // Options clavier
 
-		// R reset la grille (techniquement inutile après l'accélérateur)
+		/*// R reset la grille (retiré au profit de Ctrl + N)
 		if (evt.getKeyCode() == KeyEvent.VK_R) 
 		{
 			for(int i=0;i<9;i++)
@@ -446,13 +443,14 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 				}
 			}
 		}
-		
-		// T ou 0 reset la case
+		// T reset la case (retiré au profit de 0)
 		if (evt.getKeyCode() == KeyEvent.VK_T) 
 		{
 			if (gridClicked == true)
 				cases[curI][curJ].setText("");						
-		}
+		}*/
+		
+		// 0 reset la case
 		if (evt.getKeyCode() == KeyEvent.VK_0) 
 		{
 			if (gridClicked == true)
@@ -469,63 +467,55 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 		// Les flèches permettent de se déplacer dans la grille
 		if (evt.getKeyCode() == KeyEvent.VK_LEFT) 
 		{	
-			prevCell();
+			if (gridClicked == true)
+				prevCell();
 		}
 		if (evt.getKeyCode() == KeyEvent.VK_KP_LEFT) 
 		{
-			prevCell();
+			if (gridClicked == true)
+				prevCell();
 		}
 		if (evt.getKeyCode() == KeyEvent.VK_RIGHT) 
 		{
-			nextCell();
+			if (gridClicked == true)
+				nextCell();
 		}
 		if (evt.getKeyCode() == KeyEvent.VK_KP_RIGHT) 
 		{
-			nextCell();
+			if (gridClicked == true)
+				nextCell();
 		}
 		if (evt.getKeyCode() == KeyEvent.VK_UP) 
 		{
 			if (gridClicked == true && curI > 0)
-			{
-				cases[curI][curJ].setBackground(null);	
-				cases[curI-1][curJ].setBackground(Color.green);
-				curI--;				
-			}
+				curI--;		
 			
-			ColorIdenticalNumbers(cases[curI][curJ].getText(), curI*9 + curJ);
+			if (curI != 9 || (curJ != 0 && curJ != 6))
+				ColorGrid(cases[curI][curJ].getText(), curI*9 + curJ);
 		}
 		if (evt.getKeyCode() == KeyEvent.VK_KP_UP) 
 		{
 			if (gridClicked == true && curI > 0)
-			{
-				cases[curI][curJ].setBackground(null);	
-				cases[curI-1][curJ].setBackground(Color.green);
 				curI--;				
-			}
 			
-			ColorIdenticalNumbers(cases[curI][curJ].getText(), curI*9 + curJ);
+			if (curI != 9 || (curJ != 0 && curJ != 6))
+				ColorGrid(cases[curI][curJ].getText(), curI*9 + curJ);
 		}
 		if (evt.getKeyCode() == KeyEvent.VK_DOWN) 
 		{
 			if (gridClicked == true && curI < 8)	
-			{
-				cases[curI][curJ].setBackground(null);
-				cases[curI+1][curJ].setBackground(Color.green);
 				curI++;				
-			}
-			
-			ColorIdenticalNumbers(cases[curI][curJ].getText(), curI*9 + curJ);
+
+			if (curI != 9 || (curJ != 0 && curJ != 6))
+				ColorGrid(cases[curI][curJ].getText(), curI*9 + curJ);
 		}
 		if (evt.getKeyCode() == KeyEvent.VK_KP_DOWN) 
 		{
 			if (gridClicked == true && curI < 8)
-			{
-				cases[curI][curJ].setBackground(null);	
-				cases[curI+1][curJ].setBackground(Color.green);
-				curI++;				
-			}
-			
-			ColorIdenticalNumbers(cases[curI][curJ].getText(), curI*9 + curJ);
+				curI++;	
+
+			if (curI != 9 || (curJ != 0 && curJ != 6))
+				ColorGrid(cases[curI][curJ].getText(), curI*9 + curJ);
 		}
 		
 		// Entrer un chiffre dans une case et passer à la suivante
@@ -628,18 +618,16 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 			cases[curI][curJ].setBackground(null);	
 			if (curJ < 8)
 			{
-				cases[curI][curJ+1].setBackground(Color.green);
 				curJ++;		
 			}
 			else
 			{
-				cases[curI+1][0].setBackground(Color.green);
 				curI++;		
 				curJ = 0;		
 			}
 		}
 		
-		ColorIdenticalNumbers(cases[curI][curJ].getText(), curI*9 + curJ);
+		ColorGrid(cases[curI][curJ].getText(), curI*9 + curJ);
 	}
 
 	public void prevCell() {
@@ -649,18 +637,16 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 			cases[curI][curJ].setBackground(null);
 			if (curJ > 0)
 			{
-				cases[curI][curJ-1].setBackground(Color.green);
 				curJ--;	
 			}
 			else
 			{
-				cases[curI-1][8].setBackground(Color.green);
 				curI--;		
 				curJ = 8;		
 			}
 		}
 		
-		ColorIdenticalNumbers(cases[curI][curJ].getText(), curI*9 + curJ);
+		ColorGrid(cases[curI][curJ].getText(), curI*9 + curJ);
 	}
 	
 	public void keyReleased(KeyEvent evt) { // méthode non implémentée mais
@@ -681,6 +667,6 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 	
 	public static void main(String[] args)
 	{
-		new Afficher2(540, 1000);
+		new Afficher2(1050, 540);
 	}
 }
