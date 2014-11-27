@@ -58,6 +58,34 @@ public class Main3
 		}		
 	}
 	
+	void reporterFichierDansGrille(String fileName) { // Charge le fichier dans la grille IHM
+		String str;
+		
+		try {
+			RandomAccessFile raf = new RandomAccessFile(fileName, "r");
+			String ligne;
+			
+			for (int i = 0; (ligne = raf.readLine()) != null; i++) 
+			{
+				if (i >= 9) break;
+				for (int j = 0; j < ligne.length(); ++j)
+				{
+					if (j >= 9) break;
+					char c = ligne.charAt(j);
+					// On ne remplit pas si le char n'est pas un chiffre entre 1 et 9
+					if (c - '0' > 0 && c - '0' < 10)
+						EntrerValeur(i+1, j+1 , c - '0'); // c format char->int
+				}
+			}
+			raf.close();
+		}
+		catch (Exception e) {
+			str = fileName + " not found: " + e.toString() + "\n";
+			System.out.print(str);
+			str_ihm_out = str;
+		}
+	}
+	
 	void EntrerValeur(int i, int j, int valeur)
 	{		
 		int l = 0;
@@ -1365,27 +1393,8 @@ public class Main3
 		int difficulté = 1;
 		
 		InitialisationGrille(tab);
-		
-		// Fill game table 
-		try {
-			RandomAccessFile raf = new RandomAccessFile(fileName, "r");
-			String ligne;
-			
-			for (int i = 0; (ligne = raf.readLine()) != null; i++) {
-				for (int j = 0; j < ligne.length(); ++j)
-				{
-					char c = ligne.charAt(j);
-					if (c != '.')
-						EntrerValeur(i+1, j+1 , c - '0'); // c format char->int
-				}
-			}
-			raf.close();
-		}
-		catch (Exception e) {
-			str_out = fileName + " not found: " + e.toString() + "\n";
-			System.out.print(str_out);
-			str_ihm_out = str_out;
-		}
+
+		reporterFichierDansGrille(fileName);
 		
 		initialisationTerminee = true;
 		
