@@ -21,12 +21,14 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 	String clicked = "other";
 	int curI = -1;
 	int curJ = -1;
+	boolean preventConflictValue = false;
 	
 	public Afficher2(int largeur, int hauteur)	{
 	//on cree la fenetre
-		super ("Sudoku");
+		super("Sudoku");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(largeur, hauteur);
+		setLocationRelativeTo(null); // La fenêtre apparaît au centre de l'écran
 		
 		creerMenus();        		
 		creerInterface();
@@ -47,9 +49,9 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
     				for(int j=0;j<9;j++)
     				{
     					cases[i][j].setText("");
-    					cases[i][j].setBackground(null);
     				}
     			}
+            	ColorGrid("", curI*9 + curJ);
             	fileChosen = null;
             }
         };
@@ -57,7 +59,7 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
         
         ActionListener a2 = new ActionListener(){
             public void actionPerformed(ActionEvent e){
-            	chargerFichier();
+            	chargerFichier("./Sudoku Database");
             }
         };
         ajouterItem("Charger", menuFichier, a2, KeyEvent.VK_L);
@@ -76,40 +78,76 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
         };
         ajouterItem("Enregistrer sous", menuFichier, a4);
 
+        // Menu Difficulté
+        JMenu menuDifficulté = new JMenu("Difficulté");
+        menuDifficulté.setMnemonic(KeyEvent.VK_D);
+        
+        ActionListener a10 = new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+            	chargerFichier("./Sudoku Database/Facile");
+            }
+        };
+        ajouterItem("Facile", menuDifficulté, a10);
+        
+        ActionListener a11 = new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+            	chargerFichier("./Sudoku Database/Moyen");
+            }
+        };
+        ajouterItem("Moyen", menuDifficulté, a11);
+        
+        ActionListener a12 = new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+            	chargerFichier("./Sudoku Database/Avancé");
+            }
+        };
+        ajouterItem("Avancé", menuDifficulté, a12);
+        
+        ActionListener a13 = new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+            	chargerFichier("./Sudoku Database/Difficile");
+            }
+        };
+        ajouterItem("Difficile", menuDifficulté, a13);
+
+        // Menu Personnalisation
+        JMenu menuPersonnalisation = new JMenu("Personnalisation");
+        menuPersonnalisation.setMnemonic(KeyEvent.VK_P);
+        
+        ActionListener a20 = new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+            	preventConflictValue = !preventConflictValue;
+            }
+        };
+        JCheckBoxMenuItem checkBoxItem = new JCheckBoxMenuItem("Empêcher entrée valeur conflictueuse");
+        menuPersonnalisation.add(checkBoxItem);
+        checkBoxItem.addActionListener(a20);
+        checkBoxItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, ActionEvent.CTRL_MASK));
+        
+        ActionListener a21 = new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+            	//faireAction();
+            }
+        };
+        ajouterItem("Personnaliser couleurs TODO", menuPersonnalisation, a21);
+
         // Menu Aide
         JMenu menuAide = new JMenu("Aide");
         menuAide.setMnemonic(KeyEvent.VK_A);
         
-        ActionListener a10 = new ActionListener(){
-                public void actionPerformed(ActionEvent e){
-                	afficherGuide();
-                }
+        ActionListener a30 = new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+        		new Help("Guide du programme");
+            }
         };
-        ajouterItem("Guide du programme TODO", menuAide, a10);
-
-        // Menu Personnalisation
-        JMenu menuPersonnalisation = new JMenu("Personnalisation");
-        menuAide.setMnemonic(KeyEvent.VK_P);
-        
-        ActionListener a20 = new ActionListener(){
-                public void actionPerformed(ActionEvent e){
-                	//faireAction();
-                }
-        };
-        ajouterItem("Empêcher entrée valeur aberrante TODO", menuPersonnalisation, a20);
-        
-        ActionListener a21 = new ActionListener(){
-                public void actionPerformed(ActionEvent e){
-                	//faireAction();
-                }
-        };
-        ajouterItem("Personnaliser couleurs TODO", menuPersonnalisation, a21);
+        ajouterItem("Help", menuAide, a30, KeyEvent.VK_H);
         
         // Relier les menus à la fenêtre
 		JMenuBar barreDeMenu = new JMenuBar();
 		barreDeMenu.add(menuFichier);
-		barreDeMenu.add(menuAide);
+		barreDeMenu.add(menuDifficulté);
 		barreDeMenu.add(menuPersonnalisation);
+		barreDeMenu.add(menuAide);
 		this.setJMenuBar(barreDeMenu);
 	}
 	
@@ -128,12 +166,12 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
         item.setAccelerator(KeyStroke.getKeyStroke(key, ActionEvent.CTRL_MASK));
 	}
 	
-	private void chargerFichier()
+	private void chargerFichier(String dossier)
 	{
 		// Utiliser jnlp si possible : FileOpenService fos;
 		
 		// Dossier d'ouverture de l'explorateur
-    	JFileChooser dialogue = new JFileChooser(new File("./Testing Sudokus")); 
+    	JFileChooser dialogue = new JFileChooser(new File(dossier)); 
     	
     	if (dialogue.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
     		fileChosen = dialogue.getSelectedFile();
@@ -178,17 +216,10 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
     	}
 	}
 	
-	private void afficherGuide()
+	/*private void afficherGuide()
 	{
-		// Faire popup et noter toutes les commandes, exemple :
-		
-		/*ihmMessage.setText("Commandes :\n"
-		+ "- Entrer un chiffre : le sélectionner dans le pad en bas puis cliquer sur une case pour y coller le chiffre\n"
-		+ "OU cliquer sur une case puis sur un chiffre sur votre clavier\n"
-		+ "- Reset une case : la sélectionner et appuyer sur 0\n"
-		+ "- Reset la grille : appuyer sur Ctrl + N\n"
-		+ "NB : Utiliser les flèches pour se déplacer dans la grille");*/
-	}
+		new Help("Guide du programme");
+	}*/
 	
 	private void creerInterface()
 	{
@@ -625,110 +656,88 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 		}
 		
 		// 0 reset la case
-		if (evt.getKeyCode() == KeyEvent.VK_0) 
+		if (evt.getKeyCode() == KeyEvent.VK_0 && clicked.equals("grid")) 
 		{
-			if (clicked.equals("grid"))
-				cases[curI][curJ].setText("");			
-			nextCell();										
+			EntrerChiffre("");								
 		}
-		if (evt.getKeyCode() == KeyEvent.VK_NUMPAD0) 
+		if (evt.getKeyCode() == KeyEvent.VK_NUMPAD0 && clicked.equals("grid")) 
 		{
-			if (clicked.equals("grid"))
-				cases[curI][curJ].setText("");			
-			nextCell();									
+			EntrerChiffre("");								
 		}
 		
 		// Entrer un chiffre dans une case et passer à la suivante
 		if (evt.getKeyCode() == KeyEvent.VK_1 && clicked.equals("grid")) 
-		{
-			cases[curI][curJ].setText("1");		
-			nextCell();
-		}
+			EntrerChiffre("1");	
+		
 		if (evt.getKeyCode() == KeyEvent.VK_NUMPAD1 && clicked.equals("grid")) 
-		{
-			cases[curI][curJ].setText("1");		
-			nextCell();			
-		}
+			EntrerChiffre("1");			
+		
 		if (evt.getKeyCode() == KeyEvent.VK_2 && clicked.equals("grid")) 
-		{
-			cases[curI][curJ].setText("2");		
-			nextCell();					
-		}
+			EntrerChiffre("2");						
+		
 		if (evt.getKeyCode() == KeyEvent.VK_NUMPAD2 && clicked.equals("grid")) 
-		{
-			cases[curI][curJ].setText("2");		
-			nextCell();						
-		}
+			EntrerChiffre("2");						
+		
 		if (evt.getKeyCode() == KeyEvent.VK_3 && clicked.equals("grid")) 
-		{
-			cases[curI][curJ].setText("3");		
-			nextCell();							
-		}
+			EntrerChiffre("3");							
+		
 		if (evt.getKeyCode() == KeyEvent.VK_NUMPAD3 && clicked.equals("grid")) 
-		{
-			cases[curI][curJ].setText("3");		
-			nextCell();					
-		}
+			EntrerChiffre("3");				
+		
 		if (evt.getKeyCode() == KeyEvent.VK_4 && clicked.equals("grid")) 
-		{
-			cases[curI][curJ].setText("4");		
-			nextCell();						
-		}
+			EntrerChiffre("4");						
+		
 		if (evt.getKeyCode() == KeyEvent.VK_NUMPAD4 && clicked.equals("grid")) 
-		{
-			cases[curI][curJ].setText("4");		
-			nextCell();						
-		}
+			EntrerChiffre("4");						
+		
 		if (evt.getKeyCode() == KeyEvent.VK_5 && clicked.equals("grid")) 
-		{
-			cases[curI][curJ].setText("5");		
-			nextCell();						
-		}
+			EntrerChiffre("5");					
+		
 		if (evt.getKeyCode() == KeyEvent.VK_NUMPAD5 && clicked.equals("grid")) 
-		{
-			cases[curI][curJ].setText("5");		
-			nextCell();						
-		}
+			EntrerChiffre("5");						
+		
 		if (evt.getKeyCode() == KeyEvent.VK_6 && clicked.equals("grid")) 
-		{
-			cases[curI][curJ].setText("6");		
-			nextCell();							
-		}
+			EntrerChiffre("6");							
+		
 		if (evt.getKeyCode() == KeyEvent.VK_NUMPAD6 && clicked.equals("grid")) 
-		{
-			cases[curI][curJ].setText("6");		
-			nextCell();					
-		}
+			EntrerChiffre("6");					
+		
 		if (evt.getKeyCode() == KeyEvent.VK_7 && clicked.equals("grid")) 
-		{
-			cases[curI][curJ].setText("7");		
-			nextCell();						
-		}
+			EntrerChiffre("7");						
+		
 		if (evt.getKeyCode() == KeyEvent.VK_NUMPAD7 && clicked.equals("grid")) 
-		{
-			cases[curI][curJ].setText("7");		
-			nextCell();					
-		}
+			EntrerChiffre("7");					
+		
 		if (evt.getKeyCode() == KeyEvent.VK_8 && clicked.equals("grid")) 
-		{
-			cases[curI][curJ].setText("8");		
-			nextCell();						
-		}
+			EntrerChiffre("8");						
+		
 		if (evt.getKeyCode() == KeyEvent.VK_NUMPAD8 && clicked.equals("grid")) 
-		{
-			cases[curI][curJ].setText("8");		
-			nextCell();					
-		}
+			EntrerChiffre("8");				
+		
 		if (evt.getKeyCode() == KeyEvent.VK_9 && clicked.equals("grid")) 
-		{
-			cases[curI][curJ].setText("9");		
-			nextCell();							
-		}
+			EntrerChiffre("9");							
+		
 		if (evt.getKeyCode() == KeyEvent.VK_NUMPAD9 && clicked.equals("grid")) 
+			EntrerChiffre("9");					
+		
+	}
+	
+	private void EntrerChiffre(String chiffre) 
+	{
+		cases[curI][curJ].setText(chiffre);	
+		if (preventConflictValue == true)
 		{
-			cases[curI][curJ].setText("9");		
-			nextCell();					
+			reporterGrilleDansFichier("customGame.txt");
+			if (Utils.ValeurEntreeCoherente("customGame.txt", curI, curJ) == false)
+			{
+				ColorGrid(chiffre, curI*9 + curJ);
+				cases[curI][curJ].setText("");
+			}
+			else
+				nextCell();	
 		}
+		else
+			nextCell();	
 	}
 	
 	public void nextCell() {
@@ -787,6 +796,12 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 	
 	public static void main(String[] args)
 	{
-		new Afficher2(1050, 540);
+        SwingUtilities.invokeLater(new Runnable()
+        {
+            public void run()
+            {
+            	new Afficher2(1050, 540);
+            }
+        });
 	}
 }
