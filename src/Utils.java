@@ -4,10 +4,13 @@ import java.io.RandomAccessFile;
 public class Utils
 {
 	int[][] tab = new int[9][9];
+	int[][] tab_solution = new int[9][9];
+	int nbSolutions = 0;
 	
 	String str_ihm_out = "";
 
-	void InitialisationGrille (String fileName)	{
+	void InitialisationGrille (String fileName)	
+	{
 		for (int i=0; i<9; i++) 
 		{
 			for (int j=0; j<9; j++)
@@ -18,10 +21,38 @@ public class Utils
 		
 		reporterFichierDansGrille(fileName);
 	}
+	
 
-	void reporterFichierDansGrille(String fileName) { // Charge le fichier dans la grille IHM
-		String str;
-		
+	boolean SudokuNonRempli () // On vérifie que le sudoku n'est pas déjà rempli
+	{
+		int i = 0;
+		int j = 0;
+		while (tab[i][j] != 0)
+		{
+			if (i*j != 64)
+			{
+				if (j!=8)
+					j++;
+				else
+				{
+					i++;
+					j=0;
+				}
+			}
+			else
+			{
+				String str = "Le sudoku est déjà résolu ! Banane ! :)\n";
+				System.out.print(str);
+				str_ihm_out += str;
+				return false;
+			}
+		}
+		 
+		return true;
+	}
+
+	void reporterFichierDansGrille(String fileName) // Charge le fichier dans la grille IHM
+	{
 		try {
 			RandomAccessFile raf = new RandomAccessFile(fileName, "r");
 			String ligne;
@@ -41,7 +72,7 @@ public class Utils
 			raf.close();
 		}
 		catch (Exception e) {
-			str = fileName + " not found: " + e.toString() + "\n";
+			String str = fileName + " not found: " + e.toString() + "\n";
 			System.out.print(str);
 			str_ihm_out = str;
 		}
@@ -49,8 +80,6 @@ public class Utils
 	
 	void EntrerValeur(int i, int j, int valeur)
 	{
-		String str;
-		
 		if (0<i && i<10 && 0<j && j<10 && 0<valeur && valeur<10)
 		{
 			tab[i-1][j-1]=valeur+10; // Le +10 est pour différencier les valeurs fixes
@@ -58,7 +87,7 @@ public class Utils
 		else
 		{
 			afficheImpossible();
-			str = "Erreur : Il y a une valeur non comprise entre 1 et 9 ou "
+			String str = "Erreur : Il y a une valeur non comprise entre 1 et 9 ou "
 					+ "non située dans la grille 9x9.\n"
 					+ "Elle a été entrée après les valeurs renseignées "
 					+ "dans la grille précédente.\n";
@@ -142,16 +171,17 @@ public class Utils
 		return true;
 	}
 	
-	void ResolutionSudoku() // Le coeur du programme
+	int ResolutionSudoku() // Le coeur du programme
 	{
+		//int nbSolutions = 0; // !!! ResolutionSudoku renvoie 2 si plus d'1 solution !!!
 		boolean impossible=false;
 		int valeurAvantTests;
 		
-		for (int i=0; i<9; i++) 
+		for (int i=0; i<9; i++) // Double boucle pour repérer la case dans le tableau
 		{
-			for (int j=0; j<9; j++) // Double boucle pour repérer la case dans le tableau
+			for (int j=0; j<9; j++) 
 			{
-				if (impossible==false) 	   // Si la valeur de la case précédente était possible
+				if (impossible==false) // Si la valeur de la case précédente était possible
 				{				       
 					while (tab[i][j] > 10 && i*j!=64) // Tant que la case actuelle est fixe,
 													  // on passe à la case suivante
@@ -173,7 +203,7 @@ public class Utils
 					}
 				}
 					
-				else // Si la valeur de la case précédente ne convient pas
+				else if (impossible==true) // Si la valeur de la case précédente ne convient pas
 				{
 					while (tab[i][j] > 8 && i+j!=0) // Si aucune valeur ne convient ou si elle 
 									// est fixe, on va changer la case précédente à celle-ci
@@ -201,35 +231,39 @@ public class Utils
 					
 					if (tab[i][j] > 8 && i==0 && j==0)
 					{
-						afficheImpossible();
-						String str;
-						str = "Sudoku impossible (pas de combinaison réalisable) : vérifier les chiffres entrés\n";
-						System.out.print(str);
-						str_ihm_out += str;
-						return;
+						if (nbSolutions == 0)
+						{
+							afficheImpossible();
+							String str;
+							str = "Sudoku impossible (pas de combinaison réalisable) : vérifier les chiffres entrés\n";
+							System.out.print(str);
+							str_ihm_out += str;
+						}
+							
+						return nbSolutions;
 					}
 				}
 					 
 				impossible=false;
 				valeurAvantTests = 0;
 				
-				while (valeurAvantTests!=tab[i][j]) 
+				while (impossible==false && valeurAvantTests!=tab[i][j]) 
 					// Si la valeur a changé après un des tests, il faut tous les refaire
+					// impossible==false parce que s'il est true, alors on a modifié i et j dans l'itération précédente
 				{
 					valeurAvantTests=tab[i][j];
 					
 					for (int k=8; k>=0; k--) 
 					{
-						if (tab[i][j]==tab[i][k]%10 && k!=j) 
-							// On vérifie que la valeur n'est pas dans la ligne
+						if (tab[i][j]==tab[i][k]%10 && k!=j) // On vérifie que la valeur n'est pas dans la ligne
 						{
-							if (tab[i][j]<9) // On évite d'inscrire 10 dans une case
+							if (tab[i][j]<9) // Si elle y est, on l'incrémente si elle ne vaut pas 9
 							{
 								tab[i][j]++;
 								k=j;
 							}
-							else if (j==0) // Pour ce faire, on essaie de changer la valeur de
-						   		   		   // la case précédente
+							else if (j==0) // Sinon on évite d'inscrire 10 en essayant de changer 
+										   // la valeur de la case précédente
 							{
 								tab[i][j]=0;
 								j=7;
@@ -583,9 +617,65 @@ public class Utils
 							}							
 						}
 					} // Fin de les tests sur la région
+					
+					// Si on entre ici, une solution a été trouvée
+					if (impossible == false && i*j == 64)
+					{
+						if (nbSolutions == 0)
+						{
+							nbSolutions = 1;
+							
+							for (int k=0; k<9; ++k)
+							{
+								for (int l=0; l<9; ++l)
+								{
+									tab_solution[k][l] = tab[k][l];
+								}
+							}
+							
+							// Si aucune valeur ne convient ou si la case est fixe, on essaye la case précédente
+							while (tab[i][j] > 8 && i+j!=0) 
+							{
+								if (tab[i][j]==9)
+								{
+									tab[i][j]=0; // tout en réinitialisant la valeur si non fixe
+									impossible=true;
+								}
+								
+								if (j==0)
+								{
+									j=8;
+									i--;
+								}
+								else
+								{
+									j--;		
+								}
+							}
+							
+							// On modifie la 1e case modifiable
+							if (tab[i][j]<9)
+							{
+								tab[i][j]++;
+								impossible=false;
+							}
+						}
+						else
+						{
+							String str;
+							str = "Il y a plusieurs solutions à ce sudoku, il manque au moins 1 chiffre !\n";
+							System.out.print(str);
+							str_ihm_out += str;
+							nbSolutions = 2;
+							return nbSolutions; // On renvoie 2 si plus d'1 solution
+						}
+					}
 				}					
 			}			
-		} // On referme la double boucle sur la grille, le soduku est ici résolu
+		} // On referme la double boucle sur la grille, le sudoku est ici résolu
+		
+		return nbSolutions; // On ne devrait pas arriver ici
+		
 	} // Fin du coeur du programme
 	
 	void afficheImpossible()
@@ -689,18 +779,24 @@ public class Utils
 		return true;
 	}
 	
-	// Static methods (called from Afficher2)
+	/* Méthodes static (appelées depuis Afficher2) */
 	
-	static String PossedeSolution(String fileName)
+	static Utils PossedeSolution(String fileName)
 	{
 		Utils game = new Utils();
 		
 		game.InitialisationGrille(fileName);
-	
-		if (game.ValeursEntreesCoherentes() == true) // On vérifie qu'une valeur en entrée ne se trouve pas 2 fois sur la même ligne
-			game.ResolutionSudoku();
 		
-		return game.str_ihm_out;			
+		if (game.SudokuNonRempli() == true) // On vérifie que le sudoku n'est pas déjà rempli
+		{
+			if (game.ValeursEntreesCoherentes() == true) // On vérifie qu'une valeur en entrée ne se trouve pas 
+				// 2 fois sur la même ligne
+			{
+				game.ResolutionSudoku(); // Renvoie 0 pour pas de solution, 1 pour 1 solution et 2 pour plus que 1
+			}
+		}
+		
+		return game;			
 	}
 	
 	static boolean ValeurEntreeCoherente(String fileName, int i, int j)

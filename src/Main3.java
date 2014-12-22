@@ -7,6 +7,7 @@ public class Main3
 	boolean initialisationTerminee = false;
 	int nombreChiffresRemplis = 0;
 	String str_ihm_out = "";
+	boolean resolu;
 	
 	int[][] tab = new int[81][11];
 	
@@ -1384,7 +1385,7 @@ public class Main3
 		return RechercheFructueuse;
 	}
 		
-	void solve(String fileName, int nombreChiffresATrouver) // 81 : trouver prochain, 1 : solution
+	boolean solve(String fileName, int nombreChiffresATrouver) // 81 : trouver prochain, 1 : solution
 	{
 		// nombreChiffresATrouver est le nombre de chiffres suivants à trouver 
 		// (écrire au moins 81 pour finir le sudoku)
@@ -1420,16 +1421,23 @@ public class Main3
 						
 						if (RegleExclusion()==false)
 						{
-							
-							str_out = "Chiffre suivant non trouvé : ";
-							if (nombreChiffresRemplis < 70)
-								str_out += "Sudoku trop difficile pour ce programme (pour l'instant) !";
+							if (nombreChiffresATrouver == 1)
+							{
+								str_out = "Ce sudoku est résolvable (car il n'a qu'une solution) mais une résolution humaine est"
+									+ " trop difficile pour ce programme (pour l'instant !). Il est"
+									+ " cependant possible d'afficher la solution finale en cliquant sur"
+									+ " \"Afficher la solution\".";
+							}
 							else
-								str_out += "Sudoku non résolvable, vérifier les chiffres entrés !";
+							{
+								str_out = "Ce sudoku est résolvable (car il n'a qu'une solution) mais une résolution humaine est"
+									+ " trop difficile pour ce programme (pour l'instant !). Voici tout de même la solution finale.";
+							}
+								
 							System.out.println(str_out);
-							str_ihm_out += str_out;
+							str_ihm_out = str_out;
 							nombre = nombreChiffresATrouver;
-						
+							return false;
 						}
 					}
 				}
@@ -1460,8 +1468,10 @@ public class Main3
 					str_out += "(difficile).";
 				System.out.println("\n" + str_out);
 				str_ihm_out = str_out;
+				return true;
 			}
 		}
+		return false; // On ne devrait pas arriver ici
 	}
 	
 	public static Main3 mainFromAfficher(String fichier, int number) 
@@ -1470,7 +1480,7 @@ public class Main3
 		
 		Main3 game = new Main3();
 		
-		game.solve(fichier, number); // 1 : trouver prochain, 81 : solution
+		game.resolu = game.solve(fichier, number); // number : 1 - trouver prochain, 81 - solution
 		
 		return game;
 	}

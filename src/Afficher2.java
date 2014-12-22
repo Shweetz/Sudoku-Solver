@@ -206,7 +206,7 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 		// Utiliser jnlp si possible : FileOpenService fos;
 		
 		// Dossier d'ouverture de l'explorateur
-    	JFileChooser dialogue = new JFileChooser(new File("./Testing Sudokus")); 
+    	JFileChooser dialogue = new JFileChooser(new File("./Sudoku Database")); 
     	dialogue.setSelectedFile(new File("exemple.txt"));
     	
     	if (dialogue.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
@@ -215,11 +215,6 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 			ihmMessage.setText("Fichier " + fileChosen.getName() + " sauvegardé !");
     	}
 	}
-	
-	/*private void afficherGuide()
-	{
-		new Help("Guide du programme");
-	}*/
 	
 	private void creerInterface()
 	{
@@ -277,7 +272,7 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 		
 		ihmMessage.setText("Pour commencer :\n"
 				+ "- Soit charger un fichier (cliquer sur le menu Fichier)\n"
-				+ "- Soit entrer un chiffre : selon préférence, soit cliquer d'abord la case à remplir soit cliquer le chiffre à inscrire (dans le pad à droite)\n"
+				+ "- Soit entrer un chiffre : selon préférence, soit cliquer d'abord la case à remplir soit cliquer le chiffre à inscrire (dans le pad en bas à droite)\n"
 				+ "- Pour plus d'informations, cliquer sur le menu Aide");
 		
 		ihmMessage.setFont(new java.awt.Font("Helvetica", java.awt.Font.PLAIN, 18));
@@ -437,38 +432,60 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 		if(e.getSource() == cases[9][0]) // Afficher la solution
 		{
 			String fileName = reporterGrilleDansFichier("customGame.txt");
-			String hasSolution = Utils.PossedeSolution(fileName);
+			Utils game_utils = Utils.PossedeSolution(fileName);
 			
-			// Vérifier que le sudoku a au moins une solution
-			if (hasSolution.equals(""))
+			// Vérifier que le sudoku a une seule solution
+			if (game_utils.str_ihm_out.equals(""))
 			{
 				Main3 game = Main3.mainFromAfficher(fileName, 81); // Lancer calculs
 				
-				// Afficher la grille finie
-				for (int i = 0; i < 81; i++)
+				if (game.resolu == true)
 				{
-					cases[i/9][i%9].setBackground(null);
-					if (game.tab[i][10] != 0)
-						cases[i/9][i%9].setText(Integer.toString(game.tab[i][10]));
+					// Afficher la grille résolue
+					for (int i = 0; i < 81; i++)
+					{
+						cases[i/9][i%9].setBackground(null);
+						if (game.tab[i][10] != 0)
+							cases[i/9][i%9].setText(Integer.toString(game.tab[i][10]));
+					}					
 				}
-	
-				// Afficher le message de fin (difficulté du sudoku)
+				else
+				{
+					// Afficher la grille finie mais non résolue
+					for (int i = 0; i < 81; i++)
+					{
+						cases[i/9][i%9].setBackground(null);
+						cases[i/9][i%9].setText(Integer.toString(game_utils.tab_solution[i/9][i%9]%10));
+					}
+				}				
+				
 				ihmMessage.setText(game.str_ihm_out);
 			}
-			else
+			else // Le sudoku est impossible (0 ou plusieurs solutions)
 			{
-				// Afficher pourquoi le sudoku est impossible
-				ihmMessage.setText(hasSolution);
+				if (game_utils.nbSolutions == 2) // Plus de 1 solution
+				{
+					game_utils.str_ihm_out += "Voici tout de même une solution possible de ce sudoku.";
+					
+					// Afficher la grille finie mais non résolue
+					for (int i = 0; i < 81; i++)
+					{
+						cases[i/9][i%9].setBackground(null);
+						cases[i/9][i%9].setText(Integer.toString(game_utils.tab_solution[i/9][i%9]%10));
+					}
+				}
+				
+				ihmMessage.setText(game_utils.str_ihm_out);
 			}
 		}
 		
 		if(e.getSource() == cases[9][6]) // Trouver le prochain chiffre
 		{
 			String fileName = reporterGrilleDansFichier("customGame.txt");
-			String hasSolution = Utils.PossedeSolution(fileName);
+			Utils game_utils = Utils.PossedeSolution(fileName);
 			
-			// Vérifier que le sudoku a au moins une solution
-			if (hasSolution.equals(""))
+			// Vérifier que le sudoku a une seule solution
+			if (game_utils.str_ihm_out.equals(""))
 			{
 				Main3 game = Main3.mainFromAfficher(fileName, 1);
 				
@@ -489,13 +506,17 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 					}
 				}
 	
-				// Afficher le message
 				ihmMessage.setText(game.str_ihm_out);
 			}
-			else
-			{
-				// Afficher pourquoi le sudoku est impossible
-				ihmMessage.setText(hasSolution);
+			else // Le sudoku est impossible (0 ou plusieurs solutions)
+			{				
+				if (game_utils.nbSolutions == 2) // Plus de 1 solution
+				{
+					game_utils.str_ihm_out += "Il est cependant possible d'afficher une solution "
+							+ "en cliquant sur \"Afficher la solution\".";
+				}
+				
+				ihmMessage.setText(game_utils.str_ihm_out);
 			}
 		}
 		
@@ -582,24 +603,6 @@ public class Afficher2 extends JFrame implements ActionListener, KeyListener {
 	}
 	
 	public void keyPressed(KeyEvent evt) { // Options clavier
-
-		/*// R reset la grille (retiré au profit de Ctrl + N)
-		if (evt.getKeyCode() == KeyEvent.VK_R) 
-		{
-			for(int i=0;i<9;i++)
-			{
-				for(int j=0;j<9;j++)
-				{
-					cases[i][j].setText("");						
-				}
-			}
-		}
-		// T reset la case (retiré au profit de 0)
-		if (evt.getKeyCode() == KeyEvent.VK_T) 
-		{
-			if (clicked.equals("grid"))
-				cases[curI][curJ].setText("");						
-		}*/
 
 		// Les flèches permettent de se déplacer dans la grille
 		if (evt.getKeyCode() == KeyEvent.VK_LEFT) 
