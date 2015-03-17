@@ -16,6 +16,17 @@ The .jar is composed of different classes:
 * Utils: tests quickly if Sudoku has a solution or not.
 * Help
 
+Commands to compile :
+javac Afficher2.java
+javac Main3.java
+javac Utils.java
+javac Help.java
+java Afficher2
+
 - Other:
 Main2 is brute force Sudoku Solver.
+
+Commands to compile :
+javac Main2.java
+java Main2
 
