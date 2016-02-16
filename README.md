@@ -1,32 +1,10 @@
-Sudoku Solver (Java)
-====================
+Sudoku Solver
+=============
 
-Run the program:
-Download the .zip, extract all the files and run the .jar (you need a Java Virtual Machine). 
-http://www.mediafire.com/download/lt6lsrjrk1apa0r/Sudoku_Solver.zip
+This is a <b>Java program that solves sudokus in a logical way</b>, like a human would - try to find a cell to fill or tackle out candidates for a cell. Not all sudoku solving methods are implemented though.
 
-====================
+## Light version
+This branch is a light version of the program. It only contains the class <b>Main2</b> which brute-forces the sudoku and simply shows the final solution. This class works alone, but you need to modify the code to enter the starting numbers of the sudoku, also it prints the solution in console (Eclipse console for example).
 
-About the code:
-- Main program: 
-The .zip is composed of files including sudokus ready to be loaded and the .jar.
-The .jar is composed of different classes: 
-* Afficher2: contains main method and GUI
-* Main3: solves Sudoku (like a human)
-* Utils: tests quickly if Sudoku has a solution or not.
-* Help
-
-Commands to compile :
-javac Afficher2.java
-javac Main3.java
-javac Utils.java
-javac Help.java
-java Afficher2
-
-- Other:
-Main2 is brute force Sudoku Solver.
-
-Commands to compile :
-javac Main2.java
-java Main2
-
+## Full program
+For the full program (with the logical way), go on the branch master.
